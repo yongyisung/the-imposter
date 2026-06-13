@@ -1,0 +1,16 @@
+{
+  "name": "the-imposter",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The Imposter — a pass-and-play party game of secret words, bluffing and deduction.",
+  "scripts": {
+    "start": "npx --yes serve -l 5173 .",
+    "dev": "python3 -m http.server 5173",
+    "test": "node smoke-test.mjs"
+  },
+  "keywords": ["game", "party-game", "imposter", "spyfall", "pwa"],
+  "license": "MIT",
+  "devDependencies": {
+    "jsdom": "^29.1.1"
+  }
+}

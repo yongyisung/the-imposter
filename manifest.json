@@ -1,0 +1,19 @@
+{
+  "name": "The Imposter — Party Game",
+  "short_name": "Imposter",
+  "description": "A pass-and-play party game of secret words, bluffing and deduction.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0b18",
+  "theme_color": "#0f0f1e",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

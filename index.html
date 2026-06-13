@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#0f0f1e" />
+  <meta name="description" content="The Imposter — a pass-and-play party game of secret words, bluffing and deduction." />
+  <title>The Imposter — Party Game</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Animated backdrop -->
+  <div class="backdrop" aria-hidden="true">
+    <span class="blob blob-1"></span>
+    <span class="blob blob-2"></span>
+    <span class="blob blob-3"></span>
+    <div class="grain"></div>
+  </div>
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <button class="icon-btn" id="backBtn" aria-label="Back" hidden>‹</button>
+    <div class="brand" id="brandHome" role="button" tabindex="0">
+      <span class="brand-mark">🕵️</span>
+      <span class="brand-text">THE&nbsp;IMPOSTER</span>
+    </div>
+    <button class="icon-btn" id="muteBtn" aria-label="Toggle sound">🔊</button>
+  </header>
+
+  <main id="app" class="app"></main>
+
+  <!-- Toast region -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- Templates rendered by game.js -->
+  <script src="js/data.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
