@@ -1,5 +1,5 @@
 /* Minimal offline cache for The Imposter. Bump CACHE to invalidate. */
-const CACHE = "imposter-v1";
+const CACHE = "imposter-v3";
 const ASSETS = [
   "./",
   "./index.html",

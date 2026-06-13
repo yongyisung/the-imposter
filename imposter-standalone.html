@@ -3,37 +3,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
-  <meta name="theme-color" content="#0f0f1e" />
+  <meta name="theme-color" content="#f3ece2" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>The Imposter — Party Game</title>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>The Imposter - Party Game</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
 /* =========================================================================
-   The Imposter — styles
-   A dark, neon "party" theme. Mobile-first; scales up to tablet/desktop.
+   The Imposter - styles
+   Warm, editorial, premium. A soft sand canvas, white cards, one confident
+   coral accent, Fraunces display + Manrope UI. Mobile-first; scales to desktop.
    ========================================================================= */
 
 :root {
-  --bg: #0b0b18;
-  --bg-2: #12122a;
-  --surface: rgba(255, 255, 255, 0.05);
-  --surface-2: rgba(255, 255, 255, 0.08);
-  --border: rgba(255, 255, 255, 0.12);
-  --text: #f3f0ff;
-  --muted: #a39fc4;
-  --accent: #7c5cff;     /* violet */
-  --accent-2: #ff5c8a;   /* pink */
-  --good: #2fe6a0;       /* green */
-  --bad: #ff5b6e;        /* red */
-  --warn: #ffd166;       /* amber */
-  --gold: #ffc63d;
-  --radius: 20px;
-  --radius-sm: 12px;
-  --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
-  --tap: 0.96;
+  /* Surfaces & ink */
+  --canvas: #f3ece2;          /* warm sand behind the app */
+  --canvas-2: #efe6d9;
+  --surface: #ffffff;         /* cards */
+  --surface-soft: #fbf7f1;    /* inset / secondary fills */
+  --ink: #232020;             /* near-black, warm */
+  --ink-soft: #5b554e;        /* secondary text */
+  --muted: #938b80;           /* tertiary text */
+  --line: #ece3d6;            /* hairline borders */
+  --line-strong: #ddd1c0;
+
+  /* Brand - a fun party palette: vivid pink, bright teal, punchy orange */
+  --accent: #f5287b;          /* vivid pink */
+  --accent-ink: #d6146a;      /* pressed / hover */
+  --accent-wash: #ffe8f2;     /* soft pink tint */
+
+  /* Semantic */
+  --crew: #0fb29b;            /* bright teal */
+  --crew-wash: #e1f7f2;
+  --imp: #ff6b35;             /* punchy orange */
+  --imp-wash: #fff0e7;
+  --gold: #f0a830;
+  --warn: #c87f1a;
+
+  --radius: 24px;
+  --radius-sm: 16px;
+  --radius-xs: 11px;
+  --shadow-sm: 0 1px 2px rgba(40, 31, 22, .05), 0 1px 1px rgba(40, 31, 22, .04);
+  --shadow: 0 8px 20px rgba(40, 31, 22, .08), 0 2px 6px rgba(40, 31, 22, .05);
+  --shadow-lg: 0 28px 64px rgba(40, 31, 22, .16), 0 10px 24px rgba(40, 31, 22, .08);
+  --tap: 0.97;
+  --ease: cubic-bezier(.2, .8, .2, 1);
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -43,32 +59,31 @@
 html, body {
   margin: 0;
   min-height: 100%;
-  background: radial-gradient(1200px 800px at 50% -10%, #1b1840 0%, var(--bg) 55%) fixed;
-  color: var(--text);
-  font-family: "Space Grotesk", system-ui, -apple-system, sans-serif;
+  background:
+    radial-gradient(1100px 720px at 50% -8%, #fcf7f0 0%, rgba(252, 247, 240, 0) 60%),
+    linear-gradient(180deg, var(--canvas) 0%, var(--canvas-2) 100%) fixed;
+  color: var(--ink);
+  font-family: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-feature-settings: "ss01";
+  -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
 }
 
 body { display: flex; flex-direction: column; min-height: 100dvh; }
 
-h1, h2, h3, .display { font-family: "Fredoka", "Space Grotesk", sans-serif; }
+h1, h2, h3, .display {
+  font-family: "Fraunces", "Manrope", Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  font-optical-sizing: auto;
+}
 
-/* ---------- Animated backdrop ---------- */
-.backdrop { position: fixed; inset: 0; z-index: -1; overflow: hidden; }
-.blob {
-  position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.5;
-  animation: drift 18s ease-in-out infinite alternate;
-}
-.blob-1 { width: 46vmax; height: 46vmax; left: -12vmax; top: -10vmax; background: #4b2fc4; }
-.blob-2 { width: 38vmax; height: 38vmax; right: -10vmax; top: 20vmax; background: #c42f7a; animation-delay: -6s; }
-.blob-3 { width: 32vmax; height: 32vmax; left: 20vmax; bottom: -14vmax; background: #2f7ac4; animation-delay: -11s; }
-@keyframes drift {
-  from { transform: translate(0, 0) scale(1); }
-  to   { transform: translate(4vmax, 3vmax) scale(1.15); }
-}
+/* ---------- Backdrop (subtle warm texture only) ---------- */
+.backdrop { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.blob { display: none; }
 .grain {
-  position: absolute; inset: 0; opacity: 0.05; pointer-events: none;
-  background-image: radial-gradient(rgba(255,255,255,.6) 0.5px, transparent 0.5px);
+  position: absolute; inset: 0; opacity: 0.035;
+  background-image: radial-gradient(rgba(90, 70, 50, .5) 0.5px, transparent 0.5px);
   background-size: 4px 4px;
 }
 
@@ -76,236 +91,350 @@ h1, h2, h3, .display { font-family: "Fredoka", "Space Grotesk", sans-serif; }
 .topbar {
   position: sticky; top: 0; z-index: 20;
   display: flex; align-items: center; justify-content: space-between;
-  gap: 8px; padding: calc(10px + var(--safe-top)) 14px 10px;
-  backdrop-filter: blur(8px);
+  gap: 8px; padding: calc(12px + var(--safe-top)) 16px 12px;
+  background: rgba(243, 236, 226, 0.72);
+  backdrop-filter: saturate(140%) blur(12px);
+  -webkit-backdrop-filter: saturate(140%) blur(12px);
+  border-bottom: 1px solid transparent;
+  transition: border-color .3s;
 }
-.brand { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
-.brand-mark { font-size: 22px; filter: drop-shadow(0 2px 6px rgba(0,0,0,.5)); }
+.brand { display: flex; align-items: center; gap: 9px; cursor: pointer; user-select: none; }
+.brand-mark { display: inline-flex; color: var(--accent); }
+.ico { width: 20px; height: 20px; display: block; }
+.icon-btn .ico { width: 20px; height: 20px; }
 .brand-text {
-  font-family: "Fredoka"; font-weight: 700; letter-spacing: 2px; font-size: 16px;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  -webkit-background-clip: text; background-clip: text; color: transparent;
+  font-family: "Fraunces", serif; font-weight: 600; letter-spacing: 0.04em; font-size: 17px;
+  color: var(--ink);
 }
 .icon-btn {
-  width: 40px; height: 40px; flex: none; border-radius: 50%;
-  background: var(--surface); border: 1px solid var(--border); color: var(--text);
-  font-size: 20px; cursor: pointer; transition: transform .12s, background .2s;
-  display: grid; place-items: center;
+  width: 42px; height: 42px; flex: none; border-radius: 50%;
+  background: var(--surface); border: 1px solid var(--line); color: var(--ink);
+  font-size: 19px; cursor: pointer; transition: transform .12s var(--ease), background .2s, box-shadow .2s;
+  display: grid; place-items: center; box-shadow: var(--shadow-sm);
 }
+.icon-btn:hover { background: var(--surface-soft); }
 .icon-btn:active { transform: scale(0.9); }
 .icon-btn[hidden] { visibility: hidden; }
 
 /* ---------- App shell ---------- */
 .app {
-  flex: 1; width: 100%; max-width: 560px; margin: 0 auto;
-  padding: 8px 18px calc(28px + var(--safe-bottom));
+  flex: 1; width: 100%; max-width: 540px; margin: 0 auto;
+  padding: 12px 20px calc(32px + var(--safe-bottom));
   display: flex; flex-direction: column;
 }
-.screen { animation: screen-in .35s cubic-bezier(.2,.8,.2,1) both; }
+.screen { animation: screen-in .42s var(--ease) both; }
 @keyframes screen-in {
-  from { opacity: 0; transform: translateY(14px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+/* Stagger direct children for a refined entrance. */
+.screen > * { animation: rise .5s var(--ease) both; }
+.screen > *:nth-child(1) { animation-delay: .02s; }
+.screen > *:nth-child(2) { animation-delay: .06s; }
+.screen > *:nth-child(3) { animation-delay: .10s; }
+.screen > *:nth-child(4) { animation-delay: .14s; }
+.screen > *:nth-child(5) { animation-delay: .18s; }
+.screen > *:nth-child(6) { animation-delay: .22s; }
+.screen > *:nth-child(n+7) { animation-delay: .24s; }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ---------- Typography helpers ---------- */
-.title { font-size: clamp(30px, 9vw, 44px); line-height: 1.05; margin: 4px 0 6px; }
-.subtitle { color: var(--muted); font-size: 15px; margin: 0 0 22px; line-height: 1.5; }
-.eyebrow { text-transform: uppercase; letter-spacing: 3px; font-size: 12px; color: var(--accent-2); font-weight: 700; }
+.title { font-size: clamp(30px, 8.5vw, 42px); line-height: 1.06; margin: 6px 0 8px; }
+.subtitle { color: var(--ink-soft); font-size: 16px; margin: 0 0 24px; line-height: 1.55; max-width: 38ch; }
+.center .subtitle { margin-left: auto; margin-right: auto; }
+.eyebrow { text-transform: uppercase; letter-spacing: .18em; font-size: 12px; color: var(--accent); font-weight: 800; }
 .center { text-align: center; }
 .muted { color: var(--muted); }
 
 /* ---------- Buttons ---------- */
 .btn {
   appearance: none; border: none; cursor: pointer; width: 100%;
-  font-family: "Fredoka"; font-weight: 600; font-size: 18px; color: #fff;
-  padding: 16px 18px; border-radius: var(--radius);
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  box-shadow: 0 12px 30px rgba(124, 92, 255, .35);
-  transition: transform .12s ease, filter .2s, box-shadow .2s;
+  font-family: "Manrope", sans-serif; font-weight: 700; font-size: 17px; color: #fff;
+  letter-spacing: -0.01em;
+  padding: 16px 20px; border-radius: var(--radius-sm);
+  background: var(--accent);
+  box-shadow: 0 10px 22px rgba(245, 40, 123, .26);
+  transition: transform .14s var(--ease), background .2s, box-shadow .2s, opacity .2s;
   display: flex; align-items: center; justify-content: center; gap: 10px;
 }
+.btn:hover { background: var(--accent-ink); box-shadow: 0 14px 28px rgba(245, 40, 123, .3); }
 .btn:active { transform: scale(var(--tap)); }
-.btn:disabled { opacity: .45; cursor: not-allowed; filter: grayscale(.4); }
 .btn.secondary {
-  background: var(--surface); border: 1px solid var(--border);
-  box-shadow: none; color: var(--text);
+  background: var(--surface); border: 1px solid var(--line-strong); color: var(--ink);
+  box-shadow: var(--shadow-sm);
 }
-.btn.ghost { background: transparent; border: 1px solid var(--border); box-shadow: none; }
-.btn.danger { background: linear-gradient(135deg, #ff5b6e, #ff8a5b); box-shadow: 0 12px 30px rgba(255,91,110,.3); }
-.btn.good { background: linear-gradient(135deg, #2fe6a0, #2fb0e6); box-shadow: 0 12px 30px rgba(47,230,160,.25); }
-.btn.small { font-size: 15px; padding: 12px 14px; }
+.btn.secondary:hover { background: var(--surface-soft); box-shadow: var(--shadow); }
+.btn.ghost {
+  background: transparent; border: 1px solid var(--line-strong); color: var(--ink-soft); box-shadow: none;
+}
+.btn.ghost:hover { background: var(--surface-soft); color: var(--ink); }
+.btn.good { background: var(--crew); box-shadow: 0 10px 22px rgba(15, 178, 155, .24); }
+.btn.good:hover { background: #0c9d89; }
+.btn.danger { background: var(--imp); box-shadow: 0 10px 22px rgba(255, 107, 53, .24); }
+/* Disabled wins over every variant (placed last for specificity/order). */
+.btn:disabled, .btn.good:disabled, .btn.danger:disabled, .btn.secondary:disabled {
+  background: var(--line-strong); color: #fff; box-shadow: none; cursor: not-allowed; border-color: transparent;
+}
+.btn.small { font-size: 15px; padding: 12px 16px; border-radius: var(--radius-xs); }
 .btn-row { display: flex; gap: 12px; }
 .btn-row .btn { flex: 1; }
 .stack { display: flex; flex-direction: column; gap: 12px; }
 
+button:focus-visible, .chip:focus-visible, .roster-item:focus-visible, [role="button"]:focus-visible, input:focus-visible {
+  outline: 3px solid rgba(245, 40, 123, .5); outline-offset: 2px;
+}
+
 /* ---------- Cards & panels ---------- */
 .card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow);
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow);
 }
-.panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; }
-.panel h3 { margin: 0 0 12px; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+.panel {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 18px 18px; margin-bottom: 14px; box-shadow: var(--shadow-sm);
+}
+.panel h3 { margin: 0 0 14px; font-size: 17px; display: flex; align-items: center; gap: 9px; color: var(--ink); }
 
 /* ---------- Home menu ---------- */
-.home-hero { text-align: center; margin: 8vh 0 6vh; }
-.home-logo { font-size: clamp(64px, 22vw, 110px); line-height: 1; filter: drop-shadow(0 10px 30px rgba(0,0,0,.6)); animation: float 4s ease-in-out infinite; }
-@keyframes float { 0%,100%{ transform: translateY(0) rotate(-4deg);} 50%{ transform: translateY(-12px) rotate(4deg);} }
-.home-title {
-  font-size: clamp(40px, 13vw, 72px); margin: 10px 0 2px; letter-spacing: 1px;
-  background: linear-gradient(90deg, #fff, var(--accent-2), var(--accent));
-  -webkit-background-clip: text; background-clip: text; color: transparent;
+.home-hero { text-align: center; margin: 7vh 0 5vh; }
+.home-logo {
+  width: clamp(96px, 28vw, 124px); height: clamp(96px, 28vw, 124px); border-radius: 34px;
+  margin: 0 auto; display: grid; place-items: center;
+  background: var(--accent-wash); border: 1.5px solid var(--accent);
+  box-shadow: var(--shadow); color: var(--accent);
+  animation: float 5s ease-in-out infinite;
 }
+.home-logo .ico { width: 52%; height: 52%; }
+@keyframes float { 0%, 100% { transform: translateY(0) rotate(-2.5deg); } 50% { transform: translateY(-10px) rotate(2.5deg); } }
+.home-title {
+  font-size: clamp(58px, 19vw, 92px); margin: 14px 0 8px; letter-spacing: -0.03em; color: var(--ink);
+  line-height: 0.9;
+}
+.home-title .the {
+  display: block; font-size: .34em; font-weight: 600; font-style: normal;
+  letter-spacing: .04em; color: var(--ink-soft); margin-bottom: .06em;
+}
+.home-title .em { color: var(--accent); font-style: italic; }
 
 /* ---------- Stepper (number control) ---------- */
-.stepper { display: flex; align-items: center; gap: 14px; }
+.stepper { display: flex; align-items: center; gap: 12px; }
 .stepper button {
-  width: 46px; height: 46px; border-radius: 14px; font-size: 26px; font-weight: 700;
-  background: var(--surface-2); border: 1px solid var(--border); color: var(--text); cursor: pointer;
-  transition: transform .1s;
+  width: 46px; height: 46px; border-radius: 13px; font-size: 24px; font-weight: 700; line-height: 1;
+  background: var(--surface-soft); border: 1px solid var(--line-strong); color: var(--ink); cursor: pointer;
+  transition: transform .1s var(--ease), background .2s;
 }
-.stepper button:active { transform: scale(.88); }
-.stepper button:disabled { opacity: .3; }
-.stepper .value { font-family: "Fredoka"; font-size: 30px; min-width: 48px; text-align: center; }
-.field { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; }
-.field + .field { border-top: 1px solid var(--border); }
-.field .label { font-size: 15px; }
-.field .hint { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.stepper button:hover { background: #f4ece1; }
+.stepper button:active { transform: scale(.86); }
+.stepper button:disabled { opacity: .35; cursor: not-allowed; }
+.stepper .value { font-family: "Fraunces", serif; font-weight: 600; font-size: 28px; min-width: 48px; text-align: center; color: var(--ink); }
+.field { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; }
+.field + .field { border-top: 1px solid var(--line); }
+.field .label { font-size: 16px; font-weight: 600; }
+.field .hint { font-size: 13px; color: var(--muted); margin-top: 3px; font-weight: 500; }
 
 /* ---------- Category chips ---------- */
 .chips { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .chip {
-  display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer;
-  border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface);
-  transition: transform .1s, border-color .2s, background .2s; user-select: none;
+  display: flex; align-items: center; gap: 10px; padding: 13px 14px; cursor: pointer;
+  border-radius: var(--radius-xs); border: 1px solid var(--line-strong); background: var(--surface);
+  transition: transform .12s var(--ease), border-color .2s, background .2s, box-shadow .2s; user-select: none;
 }
+.chip:hover { box-shadow: var(--shadow-sm); }
 .chip:active { transform: scale(.97); }
-.chip .emoji { font-size: 22px; }
-.chip .name { font-size: 14px; font-weight: 500; }
-.chip.on { border-color: var(--accent); background: linear-gradient(135deg, rgba(124,92,255,.25), rgba(255,92,138,.18)); }
-.chip .tick { margin-left: auto; opacity: 0; color: var(--accent); font-weight: 700; }
-.chip.on .tick { opacity: 1; }
-
-/* ---------- Toggle switch ---------- */
-.switch { position: relative; width: 52px; height: 30px; flex: none; }
-.switch input { display: none; }
-.switch .track { position: absolute; inset: 0; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); transition: background .2s; }
-.switch .thumb { position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; transition: transform .2s; box-shadow: 0 2px 6px rgba(0,0,0,.4); }
-.switch input:checked + .track { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-color: transparent; }
-.switch input:checked + .track + .thumb { transform: translateX(22px); }
+.chip .dot { width: 12px; height: 12px; flex: none; border-radius: 50%; }
+.chip .name { font-size: 14px; font-weight: 600; }
+.chip.on { border-color: var(--accent); background: var(--accent-wash); }
+.chip .tick {
+  margin-left: auto; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 12px; background: var(--accent); color: #fff; font-weight: 800; opacity: 0; transform: scale(.5);
+  transition: transform .18s var(--ease), opacity .18s;
+}
+.chip.on .tick { opacity: 1; transform: scale(1); }
 
 /* ---------- Segmented control ---------- */
-.segmented { display: flex; background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px; padding: 4px; gap: 4px; }
-.segmented button { flex: 1; border: none; background: transparent; color: var(--muted); font-family: "Fredoka"; font-weight: 600; padding: 9px 6px; border-radius: 10px; cursor: pointer; font-size: 14px; transition: .2s; }
-.segmented button.on { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; }
+.segmented { display: flex; background: var(--surface-soft); border: 1px solid var(--line-strong); border-radius: 14px; padding: 4px; gap: 4px; }
+.segmented button {
+  flex: 1; border: none; background: transparent; color: var(--ink-soft);
+  font-family: "Manrope", sans-serif; font-weight: 700; padding: 10px 6px; border-radius: 10px;
+  cursor: pointer; font-size: 14px; transition: .2s;
+}
+.segmented button:hover { color: var(--ink); }
+.segmented button.on { background: var(--surface); color: var(--accent); box-shadow: var(--shadow-sm); }
 
 /* ---------- Player name inputs ---------- */
 .players-list { display: flex; flex-direction: column; gap: 10px; }
-.player-input { display: flex; align-items: center; gap: 10px; }
-.player-input .num { width: 30px; height: 30px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); font-size: 13px; color: var(--muted); }
-.player-input input {
-  flex: 1; background: var(--surface); border: 1px solid var(--border); color: var(--text);
-  padding: 12px 14px; border-radius: var(--radius-sm); font-size: 16px; font-family: inherit;
+.player-input { display: flex; align-items: center; gap: 11px; }
+.player-input .num {
+  width: 30px; height: 30px; flex: none; border-radius: 50%; display: grid; place-items: center;
+  background: var(--surface-soft); border: 1px solid var(--line); font-size: 13px; color: var(--muted); font-weight: 700;
 }
-.player-input input:focus { outline: none; border-color: var(--accent); }
+.player-input input {
+  flex: 1; background: var(--surface-soft); border: 1px solid var(--line-strong); color: var(--ink);
+  padding: 13px 14px; border-radius: var(--radius-xs); font-size: 16px; font-family: inherit; font-weight: 600;
+  transition: border-color .2s, background .2s;
+}
+.player-input input::placeholder { color: var(--muted); font-weight: 500; }
+.player-input input:focus { outline: none; border-color: var(--accent); background: #fff; }
 
-/* ---------- Reveal / pass-and-play card ---------- */
+/* ---------- Reveal: roster (self-serve) ---------- */
+.reveal-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  margin: 2px 0 16px; font-size: 14px; font-weight: 700; color: var(--ink-soft);
+}
+.reveal-bar { flex: 1; height: 8px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.reveal-fill {
+  display: block; height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--imp));
+  transition: width .45s var(--ease);
+}
+.roster { display: flex; flex-direction: column; gap: 11px; margin-bottom: 18px; }
+.roster-item {
+  display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+  padding: 13px 15px; box-shadow: var(--shadow-sm);
+  transition: transform .14s var(--ease), box-shadow .2s, border-color .2s, background .2s;
+  font-family: inherit; color: var(--ink);
+}
+.roster-item:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.roster-item:active { transform: scale(.985); }
+.avatar {
+  width: 46px; height: 46px; flex: none; border-radius: 50%; display: grid; place-items: center;
+  font-family: "Fraunces", serif; font-weight: 600; font-size: 18px; letter-spacing: -0.01em;
+}
+.r-name { flex: 1; min-width: 0; font-size: 18px; font-weight: 700; font-family: "Fraunces", serif; letter-spacing: -0.01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.r-status { flex: none; font-size: 13px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+.roster-item.done { background: var(--surface-soft); border-color: var(--line); }
+.roster-item.done .r-name { color: var(--ink-soft); }
+.roster-item.done .r-status { color: var(--crew); }
+.roster-item.done .avatar { opacity: .65; }
+.r-check {
+  width: 20px; height: 20px; border-radius: 50%; background: var(--crew); color: #fff;
+  display: grid; place-items: center; font-size: 12px; font-weight: 800;
+}
+
+/* ---------- Reveal: pass-and-play card ---------- */
 .reveal-wrap { flex: 1; display: flex; flex-direction: column; }
-.reveal-progress { text-align: center; color: var(--muted); margin-bottom: 14px; font-size: 14px; }
-.flip-card { perspective: 1400px; flex: 1; min-height: 380px; cursor: pointer; }
-.flip-inner { position: relative; width: 100%; height: 100%; transition: transform .6s cubic-bezier(.2,.8,.2,1); transform-style: preserve-3d; }
+.reveal-progress { text-align: center; color: var(--ink-soft); margin-bottom: 16px; font-size: 15px; font-weight: 700; }
+.flip-card { perspective: 1600px; flex: 1 1 auto; width: 100%; min-height: 58vh; position: relative; cursor: pointer; }
+.flip-inner { position: absolute; inset: 0; transition: transform .62s var(--ease); transform-style: preserve-3d; }
 .flip-card.flipped .flip-inner { transform: rotateY(180deg); }
 .flip-face {
   position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
-  border-radius: 28px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 28px; text-align: center; border: 1px solid var(--border); box-shadow: var(--shadow);
+  border-radius: var(--radius); display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 30px; text-align: center; box-shadow: var(--shadow-lg);
 }
-.flip-front { background: linear-gradient(160deg, #1d1b3a, #16142c); }
-.flip-front .who { font-size: 14px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
-.flip-front .name { font-family: "Fredoka"; font-size: clamp(30px, 9vw, 46px); margin: 8px 0 18px; }
-.flip-front .tap-hint { color: var(--accent-2); font-weight: 600; font-size: 14px; animation: pulse 1.6s infinite; }
-.flip-front .lock { font-size: 60px; margin-bottom: 14px; }
-@keyframes pulse { 0%,100%{opacity:.5;} 50%{opacity:1;} }
-.flip-back { transform: rotateY(180deg); }
-.flip-back.crew { background: linear-gradient(160deg, #14302a, #0f2420); }
-.flip-back.imposter { background: linear-gradient(160deg, #3a1420, #2a0f18); }
-.role-label { text-transform: uppercase; letter-spacing: 3px; font-size: 13px; font-weight: 700; }
-.flip-back.crew .role-label { color: var(--good); }
-.flip-back.imposter .role-label { color: var(--bad); }
-.secret-word { font-family: "Fredoka"; font-size: clamp(34px, 11vw, 58px); margin: 10px 0; line-height: 1.05; }
-.secret-cat { color: var(--muted); font-size: 15px; }
-.imposter-mark { font-size: 70px; margin-bottom: 6px; animation: shake 2.4s infinite; }
-@keyframes shake { 0%,92%,100%{transform:rotate(0);} 94%{transform:rotate(-8deg);} 96%{transform:rotate(8deg);} 98%{transform:rotate(-6deg);} }
-.imposter-hint { margin-top: 10px; font-size: 14px; color: var(--warn); }
-.tap-to-hide { margin-top: 18px; font-size: 13px; color: var(--muted); }
+.flip-front { background: var(--surface); border: 1px solid var(--line); }
+.flip-front .lock-ava {
+  width: 88px; height: 88px; border-radius: 50%; display: grid; place-items: center;
+  font-family: "Fraunces", serif; font-weight: 600; font-size: 34px; margin-bottom: 18px;
+}
+.flip-front .who { font-size: 13px; color: var(--muted); letter-spacing: .14em; text-transform: uppercase; font-weight: 800; }
+.flip-front .name { font-family: "Fraunces", serif; font-size: clamp(30px, 9vw, 44px); margin: 6px 0 20px; color: var(--ink); }
+.flip-front .tap-hint { color: var(--accent); font-weight: 700; font-size: 15px; animation: pulse 1.8s infinite; }
+.flip-front .lock { font-size: 19px; }
+@keyframes pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+.flip-back { transform: rotateY(180deg); border: 1px solid var(--line); }
+.flip-back.crew { background: var(--crew-wash); }
+.flip-back.imposter { background: var(--imp-wash); }
+.role-label { text-transform: uppercase; letter-spacing: .18em; font-size: 13px; font-weight: 800; }
+.flip-back.crew .role-label { color: var(--crew); }
+.flip-back.imposter .role-label { color: var(--imp); }
+.secret-word { font-family: "Fraunces", serif; font-weight: 600; font-size: clamp(34px, 11vw, 56px); margin: 12px 0; line-height: 1.04; color: var(--ink); }
+.secret-cat { color: var(--ink-soft); font-size: 15px; font-weight: 600; }
+.imposter-mark {
+  width: 86px; height: 86px; border-radius: 50%; margin-bottom: 10px;
+  background: var(--imp); color: #fff; display: grid; place-items: center;
+  font-family: "Fraunces", serif; font-weight: 600; font-size: 46px; line-height: 1;
+  box-shadow: 0 10px 24px rgba(255, 107, 53, .3); animation: bob 3.4s ease-in-out infinite;
+}
+@keyframes bob { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-6px) rotate(3deg); } }
+.imposter-hint { margin-top: 12px; font-size: 14px; font-weight: 700; color: var(--warn); background: #fff6e6; border: 1px solid #f3e2bf; padding: 7px 13px; border-radius: 999px; }
+.tap-to-hide { margin-top: 20px; font-size: 13px; color: var(--muted); font-weight: 600; }
 
 /* ---------- Timer ---------- */
 .timer-ring { display: grid; place-items: center; margin: 6px auto 18px; }
 .timer-ring svg { transform: rotate(-90deg); }
-.timer-ring .track-c { stroke: var(--surface-2); }
+.timer-ring .track-c { stroke: var(--line); }
 .timer-ring .prog-c { stroke: url(#tg); stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
-.timer-label { font-family: "Fredoka"; font-size: 44px; }
-.timer-sub { color: var(--muted); font-size: 14px; }
-.timer-ring.low .timer-label { color: var(--bad); }
+.timer-label { font-family: "Fraunces", serif; font-weight: 600; font-size: 44px; color: var(--ink); }
+.timer-sub { color: var(--muted); font-size: 14px; font-weight: 600; }
+.timer-ring.low .timer-label { color: var(--imp); }
 
-.turn-order { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 8px 0 18px; }
-.turn-pill { background: var(--surface); border: 1px solid var(--border); padding: 8px 12px; border-radius: 999px; font-size: 13px; }
-.turn-pill.first { border-color: var(--accent-2); background: rgba(255,92,138,.15); }
-.turn-pill .order-no { color: var(--muted); margin-right: 6px; }
+/* ---------- Discuss: relaxed turn suggestion ---------- */
+.turn-order { display: flex; flex-wrap: wrap; gap: 9px; justify-content: center; margin: 10px 0 20px; }
+.turn-pill {
+  background: var(--surface); border: 1px solid var(--line-strong); padding: 9px 15px; border-radius: 999px;
+  font-size: 14px; font-weight: 700; box-shadow: var(--shadow-sm); color: var(--ink);
+}
+.turn-pill.first { border-color: var(--accent); background: var(--accent-wash); color: var(--accent-ink); }
+.turn-pill .order-no { margin-right: 6px; }
 
 /* ---------- Voting ---------- */
 .vote-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
-.vote-row { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; }
-.vote-row .pname { flex: 1; font-size: 16px; }
+.vote-row {
+  display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius-sm); padding: 11px 14px; box-shadow: var(--shadow-sm);
+}
+.vote-row .pname { flex: 1; font-size: 17px; font-weight: 700; font-family: "Fraunces", serif; }
 .vote-counter { display: flex; align-items: center; gap: 10px; }
-.vote-counter button { width: 38px; height: 38px; border-radius: 10px; font-size: 20px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text); cursor: pointer; }
-.vote-counter .n { min-width: 22px; text-align: center; font-family: "Fredoka"; font-size: 20px; }
-.vote-total { text-align: center; color: var(--muted); margin: 12px 0; font-size: 14px; }
+.vote-counter button {
+  width: 40px; height: 40px; border-radius: 11px; font-size: 20px; background: var(--surface-soft);
+  border: 1px solid var(--line-strong); color: var(--ink); cursor: pointer; transition: transform .1s var(--ease), background .2s;
+}
+.vote-counter button:hover { background: #f4ece1; }
+.vote-counter button:active { transform: scale(.86); }
+.vote-counter .n { min-width: 22px; text-align: center; font-family: "Fraunces", serif; font-weight: 600; font-size: 21px; }
+.vote-total { text-align: center; color: var(--muted); margin: 14px 0; font-size: 14px; font-weight: 600; }
 
 /* ---------- Results ---------- */
-.result-banner { text-align: center; padding: 22px; border-radius: var(--radius); margin-bottom: 16px; }
-.result-banner.crew { background: linear-gradient(160deg, rgba(47,230,160,.2), rgba(47,176,230,.12)); border: 1px solid rgba(47,230,160,.4); }
-.result-banner.imposter { background: linear-gradient(160deg, rgba(255,91,110,.2), rgba(255,138,91,.12)); border: 1px solid rgba(255,91,110,.4); }
-.result-emoji { font-size: 60px; }
-.result-title { font-family: "Fredoka"; font-size: 30px; margin: 6px 0 2px; }
-.reveal-line { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.result-banner { text-align: center; padding: 26px 22px; border-radius: var(--radius); margin-bottom: 16px; box-shadow: var(--shadow); }
+.result-banner.crew { background: var(--crew-wash); border: 1px solid #bfe4d6; }
+.result-banner.imposter { background: var(--imp-wash); border: 1px solid #f4c9ce; }
+.result-emblem {
+  width: 72px; height: 72px; border-radius: 50%; margin: 0 auto; display: grid; place-items: center;
+  font-family: "Fraunces", serif; font-weight: 600; font-size: 38px; line-height: 1; color: #fff;
+}
+.result-banner.crew .result-emblem { background: var(--crew); }
+.result-banner.imposter .result-emblem { background: var(--imp); }
+.result-title { font-family: "Fraunces", serif; font-weight: 600; font-size: 30px; margin: 10px 0 4px; color: var(--ink); }
+.result-banner .muted { color: var(--ink-soft); font-weight: 500; }
+.reveal-line { display: flex; justify-content: space-between; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--line); }
 .reveal-line:last-child { border-bottom: none; }
-.reveal-line .k { color: var(--muted); }
-.reveal-line .v { font-weight: 600; text-align: right; }
-.tag { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; }
-.tag.imp { background: rgba(255,91,110,.2); color: var(--bad); }
-.tag.crew { background: rgba(47,230,160,.18); color: var(--good); }
+.reveal-line .k { color: var(--muted); font-weight: 600; }
+.reveal-line .v { font-weight: 700; text-align: right; }
+.tag { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 800; }
+.tag.imp { background: var(--imp-wash); color: var(--imp); }
+.tag.crew { background: var(--crew-wash); color: var(--crew); }
 
 /* ---------- Scoreboard ---------- */
 .score-table { width: 100%; }
-.score-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.score-row { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line); }
 .score-row:last-child { border-bottom: none; }
-.score-rank { width: 28px; font-family: "Fredoka"; font-size: 18px; color: var(--muted); text-align: center; }
+.score-rank { width: 30px; font-family: "Fraunces", serif; font-weight: 600; font-size: 18px; color: var(--muted); text-align: center; }
 .score-row.lead .score-rank { color: var(--gold); }
-.score-name { flex: 1; font-size: 16px; }
-.score-pts { font-family: "Fredoka"; font-size: 22px; }
-.medal { font-size: 18px; }
+.score-name { flex: 1; font-size: 17px; font-weight: 700; font-family: "Fraunces", serif; }
+.score-pts { font-family: "Fraunces", serif; font-weight: 600; font-size: 22px; color: var(--ink); }
 
 /* ---------- Misc ---------- */
 .spacer { flex: 1; }
-.divider { height: 1px; background: var(--border); margin: 18px 0; }
-.kbd { font-family: monospace; background: var(--surface-2); border: 1px solid var(--border); padding: 1px 6px; border-radius: 6px; font-size: 13px; }
+.divider { height: 1px; background: var(--line); margin: 18px 0; }
 .list { padding-left: 18px; margin: 0; }
-.list li { margin: 8px 0; line-height: 1.5; color: var(--muted); }
-.list li b { color: var(--text); }
+.list li { margin: 9px 0; line-height: 1.55; color: var(--ink-soft); font-weight: 500; }
+.list li b { color: var(--ink); font-weight: 700; }
 .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
 
 /* ---------- Toast ---------- */
 .toast {
-  position: fixed; left: 50%; bottom: calc(24px + var(--safe-bottom)); transform: translateX(-50%) translateY(20px);
-  background: rgba(20,20,40,.95); border: 1px solid var(--border); color: var(--text);
-  padding: 12px 18px; border-radius: 999px; font-size: 14px; opacity: 0; pointer-events: none;
-  transition: opacity .25s, transform .25s; z-index: 50; box-shadow: var(--shadow); max-width: 90vw;
+  position: fixed; left: 50%; bottom: calc(26px + var(--safe-bottom)); transform: translateX(-50%) translateY(20px);
+  background: var(--ink); border: 1px solid rgba(255, 255, 255, .08); color: #fff;
+  padding: 13px 20px; border-radius: 999px; font-size: 14px; font-weight: 600; opacity: 0; pointer-events: none;
+  transition: opacity .25s, transform .25s var(--ease); z-index: 50; box-shadow: var(--shadow-lg); max-width: 90vw;
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* ---------- Confetti ---------- */
 .confetti { position: fixed; inset: 0; pointer-events: none; z-index: 40; overflow: hidden; }
-.confetti i { position: absolute; top: -12px; width: 9px; height: 14px; opacity: .9; animation: fall linear forwards; }
+.confetti i { position: absolute; top: -12px; width: 9px; height: 14px; border-radius: 2px; opacity: .95; animation: fall linear forwards; }
 @keyframes fall { to { transform: translateY(105vh) rotate(720deg); opacity: .2; } }
 
 @media (min-width: 600px) {
@@ -319,24 +448,21 @@ h1, h2, h3, .display { font-family: "Fredoka", "Space Grotesk", sans-serif; }
 </head>
 <body>
   <div class="backdrop" aria-hidden="true">
-    <span class="blob blob-1"></span>
-    <span class="blob blob-2"></span>
-    <span class="blob blob-3"></span>
     <div class="grain"></div>
   </div>
   <header class="topbar">
     <button class="icon-btn" id="backBtn" aria-label="Back" hidden>‹</button>
     <div class="brand" id="brandHome" role="button" tabindex="0">
-      <span class="brand-mark">🕵️</span>
-      <span class="brand-text">THE&nbsp;IMPOSTER</span>
+      <span class="brand-mark"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.6 15.6 21 21"/></svg></span>
+      <span class="brand-text">The&nbsp;Imposter</span>
     </div>
-    <button class="icon-btn" id="muteBtn" aria-label="Toggle sound">🔊</button>
+    <button class="icon-btn" id="muteBtn" aria-label="Toggle sound"></button>
   </header>
   <main id="app" class="app"></main>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script>
 /*
- * data.js — Word packs for The Imposter.
+ * data.js - Word packs for The Imposter.
  *
  * Each category has:
  *   - id:    stable identifier (used in settings persistence)
@@ -630,7 +756,7 @@ window.GAME_DATA = GAME_DATA;
   </script>
   <script>
 /*
- * audio.js — Tiny WebAudio sound engine.
+ * audio.js - Tiny WebAudio sound engine.
  *
  * Generates all sounds procedurally so the app stays dependency- and asset-free.
  * Respects a global mute flag persisted by the game. The AudioContext is created
@@ -697,7 +823,7 @@ window.SFX = SFX;
   </script>
   <script>
 /* =========================================================================
-   game.js — The Imposter (pass-and-play party game)
+   game.js - The Imposter (pass-and-play party game)
 
    A self-contained single-page app. No build step, no framework: it renders
    screens into #app with a tiny hyperscript helper and a screen state machine.
@@ -742,6 +868,28 @@ window.SFX = SFX;
   const norm = (s) => (s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
+  /* ---------- avatars (warm, muted palette - [bg, ink]) ---------- */
+  const AVATARS = [
+    ["#ffe2e0", "#c0392b"], // coral
+    ["#e4f1ec", "#0f7a63"], // teal
+    ["#fbebd2", "#b5791b"], // amber
+    ["#e9e6f5", "#5a4b9e"], // plum
+    ["#e2eef6", "#2c6e9b"], // sky
+    ["#efe9e0", "#6b6258"], // stone
+    ["#f6e6ec", "#a23a66"], // rose
+    ["#e7f0e2", "#4e7a35"], // sage
+  ];
+  const avatarColors = (i) => AVATARS[i % AVATARS.length];
+  const initials = (nm) =>
+    (nm || "").trim().split(/\s+/).slice(0, 2).map((w) => w[0] || "").join("").toUpperCase() || "?";
+
+  /* ---------- inline SVG icons (no emoji) ---------- */
+  const ICON = {
+    mark: '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.6 15.6 21 21"/></svg>',
+    soundOn: '<svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9.5v5h3.3L12 18.6V5.4L7.3 9.5H4z"/><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M15.6 9a4 4 0 0 1 0 6M18.2 6.6a7.5 7.5 0 0 1 0 10.8"/></svg>',
+    soundOff: '<svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9.5v5h3.3L12 18.6V5.4L7.3 9.5H4z"/><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" d="m16 9.6 5 4.8M21 9.6l-5 4.8"/></svg>',
+  };
+
   /* ---------- persistence ---------- */
   const LS = {
     get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
@@ -784,7 +932,7 @@ window.SFX = SFX;
   /* ---------- sound / mute ---------- */
   let muted = LS.get("imposter.muted", false);
   SFX.setMuted(muted);
-  const syncMute = () => { muteBtn.textContent = muted ? "🔇" : "🔊"; };
+  const syncMute = () => { muteBtn.innerHTML = muted ? ICON.soundOff : ICON.soundOn; };
   syncMute();
   muteBtn.addEventListener("click", () => {
     muted = !muted; SFX.setMuted(muted); LS.set("imposter.muted", muted);
@@ -806,7 +954,7 @@ window.SFX = SFX;
   /* ---------- confetti ---------- */
   function confetti(count = 90) {
     const wrap = h("div", { class: "confetti" });
-    const colors = ["#7c5cff", "#ff5c8a", "#2fe6a0", "#ffd166", "#2fb0e6"];
+    const colors = ["#f5287b", "#0fb29b", "#ff6b35", "#f0a830", "#7c5cff"];
     for (let i = 0; i < count; i++) {
       const c = h("i");
       c.style.left = Math.random() * 100 + "vw";
@@ -838,8 +986,8 @@ window.SFX = SFX;
   const backHandlers = {
     setup: () => go("home"),
     howto: () => go("home"),
-    reveal: () => confirmAbort(),
-    discuss: () => go("reveal"),
+    reveal: () => { if (revealView === "card") go("reveal", { view: "roster" }); else confirmAbort(); },
+    discuss: () => go("reveal", { view: "roster" }),
     vote: () => go("discuss"),
     results: () => {},
   };
@@ -865,16 +1013,16 @@ window.SFX = SFX;
     const hasScores = Object.keys(state.scores).length > 0;
     return h("div", { class: "screen center" },
       h("div", { class: "home-hero" },
-        h("div", { class: "home-logo" }, "🕵️"),
-        h("h1", { class: "home-title" }, "The Imposter"),
-        h("p", { class: "subtitle" }, "Everyone gets the secret word… except the imposter. Drop clues, sniff out the faker, don't blow your cover."),
+        h("div", { class: "home-logo", html: ICON.mark }),
+        h("h1", { class: "home-title", html: "<span class=\"the\">The</span><span class=\"em\">Imposter</span>" }),
+        h("p", { class: "subtitle" }, "Everyone gets the secret word - except the imposter. Drop clues, sniff out the faker, and don't blow your cover."),
       ),
       h("div", { class: "stack" },
-        h("button", { class: "btn", onClick: () => go("setup") }, "▶  New Game"),
-        hasScores && h("button", { class: "btn secondary", onClick: () => go("scoreboard") }, "🏆  Scoreboard"),
-        h("button", { class: "btn ghost", onClick: () => go("howto") }, "📖  How to Play"),
+        h("button", { class: "btn", onClick: () => go("setup") }, "New game"),
+        hasScores && h("button", { class: "btn secondary", onClick: () => go("scoreboard") }, "Scoreboard"),
+        h("button", { class: "btn ghost", onClick: () => go("howto") }, "How to play"),
       ),
-      h("p", { class: "muted center", style: "margin-top:26px;font-size:12px" },
+      h("p", { class: "muted center", style: "margin-top:28px;font-size:13px;font-weight:600" },
         GAME_DATA.categories.length + " word packs · pass-and-play · 3–12 players"),
     );
   }
@@ -888,33 +1036,33 @@ window.SFX = SFX;
       h("p", { class: "eyebrow" }, "How to play"),
       h("h2", { class: "title", style: "font-size:32px" }, "Bluff. Deduce. Survive."),
       h("div", { class: "panel" },
-        h("h3", null, "🎯 The setup"),
+        h("h3", null, "The setup"),
         h("ul", { class: "list" },
           h("li", null, h("b", null, "Crew"), " members all see the same ", h("b", null, "secret word"), "."),
-          h("li", null, "One or more ", h("b", null, "imposters"), " do not — they must fake it."),
+          h("li", null, "One or more ", h("b", null, "imposters"), " do not - they must fake it."),
           h("li", null, "Pass the device around so each player privately sees their card."),
         )),
       h("div", { class: "panel" },
-        h("h3", null, "💬 The round"),
+        h("h3", null, "The round"),
         h("ul", { class: "list" },
           h("li", null, "Going in turn order, everyone says ", h("b", null, "one word"), " related to the secret word."),
-          h("li", null, "Crew: prove you know it — but don't be so obvious the imposter guesses it."),
+          h("li", null, "Crew: prove you know it - but don't be so obvious the imposter guesses it."),
           h("li", null, "Imposter: blend in. Stay vague, then steal a real clue and echo it."),
         )),
       h("div", { class: "panel" },
-        h("h3", null, "🗳️ The vote"),
+        h("h3", null, "The vote"),
         h("ul", { class: "list" },
           h("li", null, "Discuss, then vote for who you think is the imposter."),
           h("li", null, "Most votes gets ejected. A tie means nobody is ejected."),
         )),
       h("div", { class: "panel" },
-        h("h3", null, "🏆 Scoring"),
+        h("h3", null, "Scoring"),
         h("ul", { class: "list" },
           h("li", null, "Eject an imposter → every ", h("b", null, "crew"), " member scores ", h("b", null, "+1"), "."),
-          h("li", null, "Caught imposter gets one guess at the word — nail it for a ", h("b", null, "+2"), " steal."),
+          h("li", null, "Caught imposter gets one guess at the word - nail it for a ", h("b", null, "+2"), " steal."),
           h("li", null, "Imposter survives (wrong eject or tie) → each ", h("b", null, "imposter"), " scores ", h("b", null, "+2"), "."),
         )),
-      h("button", { class: "btn", style: "margin-top:8px", onClick: () => go("setup") }, "Let's play →"),
+      h("button", { class: "btn", style: "margin-top:8px", onClick: () => go("setup") }, "Let's play"),
     );
   }
 
@@ -974,15 +1122,15 @@ window.SFX = SFX;
       }
     }
     const namesPanel = h("div", { class: "panel" },
-      h("h3", null, "🧑‍🤝‍🧑 Player names ", h("span", { class: "muted", style: "font-weight:400;font-size:12px" }, "(optional)")),
+      h("h3", null, "Player names ", h("span", { class: "muted", style: "font-weight:500;font-size:13px" }, "(optional)")),
       namesList);
 
     // --- Categories ---
     const chips = h("div", { class: "chips" });
-    GAME_DATA.categories.forEach((c) => {
+    GAME_DATA.categories.forEach((c, ci) => {
       const on = s.categories.includes(c.id);
       const chip = h("div", { class: "chip" + (on ? " on" : ""), dataset: { id: c.id } },
-        h("span", { class: "emoji" }, c.icon),
+        h("span", { class: "dot", style: `background:${avatarColors(ci)[1]}` }),
         h("span", { class: "name" }, c.name),
         h("span", { class: "tick" }, "✓"));
       chip.addEventListener("click", () => {
@@ -996,7 +1144,7 @@ window.SFX = SFX;
       chips.append(chip);
     });
     const catPanel = h("div", { class: "panel" },
-      h("h3", null, "🃏 Word packs"),
+      h("h3", null, "Word packs"),
       h("div", { class: "badge-row", style: "margin-bottom:12px" },
         h("button", { class: "btn ghost small", onClick: () => { s.categories = GAME_DATA.categories.map((c) => c.id); SFX.tap(); reSelectChips(); } }, "Select all"),
       ),
@@ -1015,7 +1163,7 @@ window.SFX = SFX;
     });
     const modeHint = h("div", { class: "hint", style: "margin-top:8px" }, modes.find((m) => m[0] === s.imposterMode)[2]);
     const modePanel = h("div", { class: "panel" },
-      h("h3", null, "🎭 What the imposter sees"), seg, modeHint);
+      h("h3", null, "What the imposter sees"), seg, modeHint);
 
     // --- Timer ---
     const timerVal = h("span", { class: "value" }, s.timerMinutes === 0 ? "Off" : s.timerMinutes + "m");
@@ -1023,14 +1171,14 @@ window.SFX = SFX;
     const tPlus = h("button", { onClick: () => { s.timerMinutes = clamp(s.timerMinutes + 1, 0, 9); SFX.tap(); timerVal.textContent = s.timerMinutes + "m"; } }, "+");
     const timerPanel = h("div", { class: "panel" },
       h("div", { class: "field", style: "padding:0" },
-        h("div", null, h("div", { class: "label" }, "⏱️ Discussion timer"), h("div", { class: "hint" }, "0 turns it off")),
+        h("div", null, h("div", { class: "label" }, "Discussion timer"), h("div", { class: "hint" }, "0 turns it off")),
         h("div", { class: "stepper" }, tMinus, timerVal, tPlus)));
 
-    const startBtn = h("button", { class: "btn", style: "margin-top:4px", onClick: startGame }, "🎲  Start Game");
+    const startBtn = h("button", { class: "btn", style: "margin-top:4px", onClick: startGame }, "Start game");
 
     screen.append(
       h("p", { class: "eyebrow" }, "Game setup"),
-      h("h2", { class: "title", style: "font-size:30px" }, "Configure your round"),
+      h("h2", { class: "title", style: "font-size:30px" }, "Set up your round"),
       playersPanel, namesPanel, catPanel, modePanel, timerPanel, startBtn,
     );
 
@@ -1040,7 +1188,7 @@ window.SFX = SFX;
   }
 
   /* =======================================================================
-     GAME — assignment & round lifecycle
+     GAME - assignment & round lifecycle
      ===================================================================== */
   function startGame() {
     LS.set("imposter.settings", state.settings);
@@ -1081,79 +1229,125 @@ window.SFX = SFX;
     const impSet = new Set(order.slice(0, impCount));
     state.players = uniqueNames.map((nm, i) => ({ name: nm, role: impSet.has(i) ? "imposter" : "crew" }));
 
-    // Turn order for discussion: random, imposter never forced first (just random).
+    // Suggested opener for discussion (a gentle nudge, not a dictated order).
     state.turnOrder = shuffle([...Array(s.numPlayers).keys()]);
+
+    // Track who has privately viewed their card (self-serve, any order).
+    state.revealed = new Set();
 
     // Reset votes.
     state.votes = {};
     state.players.forEach((_, i) => (state.votes[i] = 0));
 
-    go("reveal", { idx: 0 });
+    go("reveal", { view: "roster" });
   }
 
   /* =======================================================================
-     SCREEN: REVEAL (pass-and-play)
+     SCREEN: REVEAL (self-serve pass-and-play)
+
+     A roster lists every player by full name. Each person taps their OWN name -
+     in any order - to privately reveal their card, then returns to the list,
+     which marks them "Seen". Discussion unlocks once everyone has revealed.
      ===================================================================== */
+  let revealView = "roster"; // tracked so the back button knows where to go
+
   function renderReveal(opts) {
+    revealView = opts.view || "roster";
+    return revealView === "card" ? renderRevealCard(opts.idx) : renderRevealRoster();
+  }
+
+  function renderRevealRoster() {
     setBack(true);
-    const idx = opts.idx || 0;
-    const p = state.players[idx];
     const total = state.players.length;
+    const done = state.revealed.size;
+    const allDone = done === total;
+    const left = total - done;
 
-    const card = h("div", { class: "flip-card" });
+    const fill = h("span", { class: "reveal-fill", style: `width:${Math.round((done / total) * 100)}%` });
+
+    const roster = h("div", { class: "roster" });
+    state.players.forEach((p, i) => {
+      const seen = state.revealed.has(i);
+      const [bg, ink] = avatarColors(i);
+      const item = h("button", { class: "roster-item" + (seen ? " done" : ""), type: "button" },
+        h("span", { class: "avatar", style: `background:${bg};color:${ink}` }, initials(p.name)),
+        h("span", { class: "r-name" }, p.name),
+        seen
+          ? h("span", { class: "r-status" }, "Seen", h("span", { class: "r-check" }, "✓"))
+          : h("span", { class: "r-status" }, "Tap to reveal →"));
+      item.addEventListener("click", () => { SFX.tap(); go("reveal", { view: "card", idx: i }); });
+      roster.append(item);
+    });
+
+    const startBtn = h("button", { class: "btn good", disabled: !allDone },
+      allDone ? "Everyone's in - start discussion" : `${left} ${left === 1 ? "player" : "players"} still to reveal`);
+    startBtn.addEventListener("click", () => { if (!allDone) return; SFX.reveal(); go("discuss"); });
+
+    return h("div", { class: "screen" },
+      h("p", { class: "eyebrow" }, `Round ${state.round} · Pass & reveal`),
+      h("h2", { class: "title" }, "Tap your name"),
+      h("p", { class: "subtitle" }, "Pass the phone around the table. Each player taps their own name - in any order - to see their secret in private, then hands it on."),
+      h("div", { class: "reveal-head" },
+        h("span", null, `${done} of ${total} revealed`),
+        h("span", { class: "reveal-bar" }, fill)),
+      roster,
+      startBtn);
+  }
+
+  function renderRevealCard(idx) {
+    setBack(true);
+    const p = state.players[idx];
     const isImp = p.role === "imposter";
+    const [bg, ink] = avatarColors(idx);
 
-    // Back face content depends on role and imposter mode.
     let backFace;
     if (isImp) {
       const extras = [];
-      if (state.settings.imposterMode === "category") extras.push(h("div", { class: "imposter-hint" }, "Topic: " + state.secret.category));
-      if (state.settings.imposterMode === "hint") extras.push(h("div", { class: "imposter-hint" }, "Clue: " + state.secret.hint));
+      if (state.settings.imposterMode === "category") extras.push(h("div", { class: "imposter-hint" }, "Topic · " + state.secret.category));
+      if (state.settings.imposterMode === "hint") extras.push(h("div", { class: "imposter-hint" }, "Clue · " + state.secret.hint));
       backFace = h("div", { class: "flip-face flip-back imposter" },
-        h("div", { class: "imposter-mark" }, "🤫"),
-        h("div", { class: "role-label" }, "You are the Imposter"),
+        h("div", { class: "imposter-mark" }, "?"),
+        h("div", { class: "role-label" }, "You're the imposter"),
         h("div", { class: "secret-word" }, "?????"),
         ...extras,
         h("div", { class: "tap-to-hide" }, "Blend in. Don't get caught."));
     } else {
       backFace = h("div", { class: "flip-face flip-back crew" },
-        h("div", { class: "role-label" }, "Crew · the secret word is"),
+        h("div", { class: "role-label" }, "The secret word is"),
         h("div", { class: "secret-word" }, state.secret.word),
-        h("div", { class: "secret-cat" }, state.secret.icon + " " + state.secret.category),
-        h("div", { class: "tap-to-hide" }, "Memorise it, then pass on."));
+        h("div", { class: "secret-cat" }, state.secret.category),
+        h("div", { class: "tap-to-hide" }, "Memorise it, then hand the phone on."));
     }
 
     const front = h("div", { class: "flip-face flip-front" },
-      h("div", { class: "lock" }, "🔒"),
-      h("div", { class: "who" }, "Pass the device to"),
+      h("div", { class: "lock-ava", style: `background:${bg};color:${ink}` }, initials(p.name)),
+      h("div", { class: "who" }, "This card is for"),
       h("div", { class: "name" }, p.name),
-      h("div", { class: "tap-hint" }, "Tap to reveal your card"));
+      h("div", { class: "tap-hint" }, "Tap to reveal - keep it hidden from everyone else"));
 
-    card.append(h("div", { class: "flip-inner" }, front, backFace));
+    const card = h("div", { class: "flip-card" }, h("div", { class: "flip-inner" }, front, backFace));
 
     let revealed = false;
-    const nextBtn = h("button", { class: "btn", style: "margin-top:16px", disabled: true },
-      idx === total - 1 ? "Start Discussion →" : "Hide & Pass →");
+    const doneBtn = h("button", { class: "btn", style: "margin-top:16px", disabled: true }, "Hide & pass on");
 
     card.addEventListener("click", () => {
       if (revealed) return;
       revealed = true;
       card.classList.add("flipped");
       SFX.reveal();
-      nextBtn.disabled = false;
+      doneBtn.disabled = false;
     });
-
-    nextBtn.addEventListener("click", () => {
+    doneBtn.addEventListener("click", () => {
       if (!revealed) return;
       SFX.hide();
-      if (idx === total - 1) go("discuss");
-      else go("reveal", { idx: idx + 1 });
+      state.revealed.add(idx);
+      go("reveal", { view: "roster" });
     });
 
     return h("div", { class: "screen reveal-wrap" },
-      h("div", { class: "reveal-progress" }, `Card ${idx + 1} of ${total} · Round ${state.round}`),
+      h("div", { class: "reveal-progress" }, p.name + (state.revealed.has(idx) ? " · already seen" : "")),
       card,
-      nextBtn);
+      doneBtn);
   }
 
   /* =======================================================================
@@ -1165,15 +1359,18 @@ window.SFX = SFX;
     const R = 90, C = 2 * Math.PI * R;
 
     const order = state.turnOrder;
+    const opener = state.players[order[0]];
+    // No dictated order - just a suggested opener, then the room goes however it likes.
     const turnPills = h("div", { class: "turn-order" },
       order.map((pi, i) => h("div", { class: "turn-pill" + (i === 0 ? " first" : "") },
-        h("span", { class: "order-no" }, (i + 1) + "."), state.players[pi].name)));
+        i === 0 ? h("span", { class: "order-no" }, "Opener · ") : null, state.players[pi].name)));
 
     const screen = h("div", { class: "screen center" },
       h("p", { class: "eyebrow" }, "Discussion"),
       h("h2", { class: "title", style: "font-size:28px" }, "Drop your clues"),
       h("p", { class: "subtitle" },
-        h("b", null, state.players[order[0]].name), " starts. One word each, in order. Then vote."));
+        "One word each that proves you know the secret - without handing it to the imposter. ",
+        h("b", null, opener.name), " could kick things off; after that, go round however you like."));
 
     if (s.timerMinutes > 0) {
       let remaining = s.timerMinutes * 60;
@@ -1183,7 +1380,7 @@ window.SFX = SFX;
       ring.innerHTML = `
         <svg width="220" height="220" viewBox="0 0 220 220">
           <defs><linearGradient id="tg" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#7c5cff"/><stop offset="100%" stop-color="#ff5c8a"/>
+            <stop offset="0%" stop-color="#f5287b"/><stop offset="100%" stop-color="#ff6b35"/>
           </linearGradient></defs>
           <circle class="track-c" cx="110" cy="110" r="90" fill="none" stroke-width="14"/>
           <circle class="prog-c" cx="110" cy="110" r="90" fill="none" stroke-width="14"
@@ -1196,11 +1393,11 @@ window.SFX = SFX;
       const total = remaining;
       let paused = false;
 
-      const pauseBtn = h("button", { class: "btn secondary" }, "⏸ Pause");
-      const voteBtn = h("button", { class: "btn good" }, "🗳️ Go to Vote");
+      const pauseBtn = h("button", { class: "btn secondary" }, "Pause");
+      const voteBtn = h("button", { class: "btn good" }, "Go to vote");
       pauseBtn.addEventListener("click", () => {
         paused = !paused; SFX.tap();
-        pauseBtn.textContent = paused ? "▶ Resume" : "⏸ Pause";
+        pauseBtn.textContent = paused ? "Resume" : "Pause";
       });
       voteBtn.addEventListener("click", () => go("vote"));
 
@@ -1221,7 +1418,7 @@ window.SFX = SFX;
         h("div", { class: "btn-row", style: "margin-top:8px" }, pauseBtn, voteBtn));
     } else {
       screen.append(turnPills,
-        h("button", { class: "btn good", onClick: () => go("vote") }, "🗳️ Start Voting"));
+        h("button", { class: "btn good", onClick: () => go("vote") }, "Start voting"));
     }
     return screen;
   }
@@ -1234,7 +1431,7 @@ window.SFX = SFX;
     state.players.forEach((_, i) => { if (state.votes[i] == null) state.votes[i] = 0; });
 
     const totalLabel = h("div", { class: "vote-total" });
-    const revealBtn = h("button", { class: "btn", disabled: true }, "Reveal Results 🔍");
+    const revealBtn = h("button", { class: "btn", disabled: true }, "Reveal results");
 
     function refresh() {
       const total = Object.values(state.votes).reduce((a, b) => a + b, 0);
@@ -1258,7 +1455,7 @@ window.SFX = SFX;
     return h("div", { class: "screen" },
       h("p", { class: "eyebrow" }, "The vote"),
       h("h2", { class: "title", style: "font-size:28px" }, "Who's the imposter?"),
-      h("p", { class: "subtitle" }, "Tally everyone's votes. Most votes gets ejected — a tie ejects nobody."),
+      h("p", { class: "subtitle" }, "Tally everyone's votes. Most votes gets ejected - a tie ejects nobody."),
       grid, totalLabel, revealBtn);
   }
 
@@ -1285,7 +1482,7 @@ window.SFX = SFX;
 
     const screen = h("div", { class: "screen" });
 
-    // Apply scoring (only once per render of results — guard via flag on state).
+    // Apply scoring (only once per render of results - guard via flag on state).
     // We recompute fresh each time results is shown for a round; guard with a key.
     const stealState = { used: false, won: false };
 
@@ -1300,13 +1497,13 @@ window.SFX = SFX;
     }
 
     // Banner
-    let bannerClass, emoji, title, sub;
+    let bannerClass, emblem, title, sub;
     if (caughtImposter) {
-      bannerClass = "crew"; emoji = "🎉"; title = "Imposter caught!";
+      bannerClass = "crew"; emblem = "✓"; title = "Imposter caught!";
       sub = `${state.players[ejected].name} was an imposter. Crew scores +1 each.`;
       SFX.crewWin(); confetti();
     } else {
-      bannerClass = "imposter"; emoji = "🤫"; title = tie ? "Tie — imposter escapes!" : "Wrong call!";
+      bannerClass = "imposter"; emblem = "?"; title = tie ? "Tie - imposter escapes!" : "Wrong call!";
       sub = tie ? "Nobody was ejected. Imposters score +2 each."
                 : `${state.players[ejected].name} was innocent crew. Imposters score +2 each.`;
       SFX.imposterWin();
@@ -1314,7 +1511,7 @@ window.SFX = SFX;
     applyBaseScoring();
 
     screen.append(h("div", { class: "result-banner " + bannerClass },
-      h("div", { class: "result-emoji" }, emoji),
+      h("div", { class: "result-emblem" }, emblem),
       h("div", { class: "result-title" }, title),
       h("p", { class: "muted", style: "margin:4px 0 0" }, sub)));
 
@@ -1322,7 +1519,7 @@ window.SFX = SFX;
     const panel = h("div", { class: "panel" });
     panel.append(h("div", { class: "reveal-line" },
       h("span", { class: "k" }, "Secret word"),
-      h("span", { class: "v" }, state.secret.icon + " " + state.secret.word)));
+      h("span", { class: "v" }, state.secret.word)));
     panel.append(h("div", { class: "reveal-line" },
       h("span", { class: "k" }, "Category"),
       h("span", { class: "v" }, state.secret.category)));
@@ -1354,10 +1551,10 @@ window.SFX = SFX;
         if (correct) {
           state.scores[imp.name] += 2;
           stealState.won = true;
-          resultMsg.innerHTML = `🔥 <b>${imp.name}</b> nailed it — <b>“${state.secret.word}”</b>! Steal bonus +2.`;
+          resultMsg.innerHTML = `<b>${imp.name}</b> nailed it - <b>“${state.secret.word}”</b>! Steal bonus +2.`;
           SFX.crewWin(); confetti(60);
         } else {
-          resultMsg.innerHTML = text ? `❌ “${text}” was wrong. No steal.` : "Guess skipped.";
+          resultMsg.innerHTML = text ? `“${text}” was wrong. No steal.` : "Guess skipped.";
           SFX.warn();
         }
         input.disabled = true; guessBtn.disabled = true; skipBtn.disabled = true;
@@ -1367,7 +1564,7 @@ window.SFX = SFX;
       skipBtn.addEventListener("click", () => resolveGuess(""));
 
       guessPanel.append(
-        h("h3", null, "🎯 Imposter's last chance"),
+        h("h3", null, "Imposter's last chance"),
         h("p", { class: "muted", style: "margin:0 0 12px;font-size:14px" }, "Guess the secret word for a +2 steal."),
         input,
         h("div", { class: "btn-row", style: "margin-top:12px" }, skipBtn, guessBtn),
@@ -1379,11 +1576,11 @@ window.SFX = SFX;
     const summary = h("div", { class: "panel" });
     function renderScoreSummary() {
       summary.innerHTML = "";
-      summary.append(h("h3", null, "📊 Standings"));
+      summary.append(h("h3", null, "Standings"));
       const ranked = Object.entries(state.scores).sort((a, b) => b[1] - a[1]);
       ranked.forEach(([nm, pts], idx) => {
         summary.append(h("div", { class: "reveal-line" },
-          h("span", { class: "k" }, (idx === 0 ? "🥇 " : "") + nm),
+          h("span", { class: "k" }, (idx + 1) + ".  " + nm),
           h("span", { class: "v" }, pts + " pts")));
       });
     }
@@ -1391,8 +1588,8 @@ window.SFX = SFX;
     screen.append(summary);
 
     actions.append(
-      h("button", { class: "btn", onClick: () => nextRound() }, "🔁  Next Round"),
-      h("button", { class: "btn secondary", onClick: () => go("scoreboard") }, "🏁  End Game & Scores"));
+      h("button", { class: "btn", onClick: () => nextRound() }, "Next round"),
+      h("button", { class: "btn secondary", onClick: () => go("scoreboard") }, "End game & scores"));
     screen.append(actions);
 
     return screen;
@@ -1405,7 +1602,6 @@ window.SFX = SFX;
     setBack(false);
     state.inGame = false;
     const ranked = Object.entries(state.scores).sort((a, b) => b[1] - a[1]);
-    const medals = ["🥇", "🥈", "🥉"];
     const topScore = ranked.length ? ranked[0][1] : 0;
 
     if (ranked.length && topScore > 0) confetti(70);
@@ -1414,7 +1610,7 @@ window.SFX = SFX;
     ranked.forEach(([nm, pts], i) => {
       const lead = pts === topScore && topScore > 0;
       table.append(h("div", { class: "score-row" + (lead ? " lead" : "") },
-        h("span", { class: "score-rank" }, medals[i] || i + 1),
+        h("span", { class: "score-rank" }, i + 1),
         h("span", { class: "score-name" }, nm),
         h("span", { class: "score-pts" }, pts)));
     });
@@ -1422,12 +1618,12 @@ window.SFX = SFX;
     return h("div", { class: "screen" },
       h("p", { class: "eyebrow center" }, `${state.round} round${state.round === 1 ? "" : "s"} played`),
       h("h2", { class: "title center", style: "font-size:34px" },
-        topScore > 0 ? "🏆 " + ranked[0][0] + " wins!" : "Game over"),
+        topScore > 0 ? ranked[0][0] + " wins!" : "Game over"),
       h("div", { class: "card", style: "margin:10px 0 18px" }, table),
       h("div", { class: "stack" },
-        h("button", { class: "btn", onClick: () => { state.inGame = true; nextRound(); } }, "🔁  Play Another Round"),
-        h("button", { class: "btn secondary", onClick: () => go("setup") }, "⚙️  New Game (reconfigure)"),
-        h("button", { class: "btn ghost", onClick: () => go("home") }, "🏠  Home")));
+        h("button", { class: "btn", onClick: () => { state.inGame = true; nextRound(); } }, "Play another round"),
+        h("button", { class: "btn secondary", onClick: () => go("setup") }, "New game"),
+        h("button", { class: "btn ghost", onClick: () => go("home") }, "Home")));
   }
 
   /* =======================================================================

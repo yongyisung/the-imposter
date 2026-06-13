@@ -30,11 +30,31 @@ const click = (el) => { if (!el) throw new Error("element not found to click"); 
 let step = 0;
 function check(cond, msg) { step++; if (!cond) throw new Error(`FAIL @${step}: ${msg}`); console.log(`  ✓ ${msg}`); }
 
+// Drive the self-serve reveal roster: each player taps their name, flips, hides.
+function driveReveal() {
+  let guard = 0;
+  while (guard++ < 40) {
+    const pending = [...doc.querySelectorAll(".roster-item:not(.done)")];
+    if (!pending.length) break;
+    click(pending[0]);                 // open this player's private card
+    const card = $(".flip-card");
+    if (!card) throw new Error("flip card did not open from roster");
+    click(card);                       // flip to reveal the role
+    if (!card.classList.contains("flipped")) throw new Error("card did not flip");
+    const hideBtn = $(".reveal-wrap .btn");
+    if (hideBtn.disabled) throw new Error("hide button still disabled after reveal");
+    click(hideBtn);                    // mark seen, return to roster
+  }
+  const startBtn = byText("start discussion");
+  check(startBtn && !startBtn.disabled, "discussion unlocks once everyone has revealed");
+  click(startBtn);
+}
+
 console.log("Smoke test: The Imposter");
 
 // Home
 check($(".home-title"), "home screen renders");
-click(byText("New Game"));
+click(byText("New game"));
 
 // Setup
 check($(".chips .chip"), "setup screen renders categories");
@@ -48,30 +68,26 @@ const firstInput = doc.querySelector(".player-input input");
 firstInput.value = "Alice";
 firstInput.dispatchEvent(new window.Event("input", { bubbles: true }));
 // start
-click(byText("Start Game"));
+click(byText("Start game"));
 
-// Reveal — flip through all cards
-let guard = 0;
-while ($(".flip-card") && guard++ < 20) {
-  const card = $(".flip-card");
-  click(card); // flip
-  check(card.classList.contains("flipped"), `card ${guard} flips to reveal role`);
-  const nextBtn = $(".reveal-wrap .btn");
-  check(!nextBtn.disabled, "next button enabled after reveal");
-  click(nextBtn);
-  if ($(".timer-ring") || byText("Start Voting")) break;
-}
+// Reveal — self-serve roster
+check($(".roster"), "reveal screen shows the player roster");
+check(doc.querySelectorAll(".roster-item").length === 5, "roster lists all 5 players");
+check(byText("Alice"), "roster shows the custom full name");
+const startLocked = byText("still to reveal");
+check(startLocked && startLocked.disabled, "start button is locked until everyone reveals");
+driveReveal();
 
 // Discuss
-check($(".turn-order"), "discuss screen shows turn order");
-const voteBtn = byText("Go to Vote") || byText("Start Voting");
+check($(".turn-order"), "discuss screen lists the players");
+const voteBtn = byText("Go to vote") || byText("Start voting");
 click(voteBtn);
 
 // Vote — give all votes to one player (likely catches/misses imposter, both paths valid)
 check($(".vote-grid"), "vote screen renders");
 const firstPlus = [...doc.querySelectorAll(".vote-counter button")].filter((b) => b.textContent === "+")[0];
 click(firstPlus); click(firstPlus); click(firstPlus);
-const revealResults = byText("Reveal Results");
+const revealResults = byText("Reveal results");
 check(!revealResults.disabled, "reveal results enabled after votes");
 click(revealResults);
 
@@ -91,20 +107,15 @@ if (guessBox) {
 check($(".panel h3") && [...doc.querySelectorAll(".panel h3")].some(h=>h.textContent.includes("Standings")), "standings shown");
 
 // Next round
-click(byText("Next Round"));
-check($(".flip-card"), "next round starts a fresh reveal");
+click(byText("Next round"));
+check($(".roster"), "next round starts a fresh reveal roster");
 
-// Jump to scoreboard via end game: go back through a quick round to scoreboard
-// Drive to results again quickly:
-guard = 0;
-while ($(".flip-card") && guard++ < 20) {
-  click($(".flip-card"));
-  click($(".reveal-wrap .btn"));
-}
-click(byText("Go to Vote") || byText("Start Voting"));
+// Drive a second quick round all the way to the scoreboard.
+driveReveal();
+click(byText("Go to vote") || byText("Start voting"));
 click([...doc.querySelectorAll(".vote-counter button")].filter((b) => b.textContent === "+")[0]);
-click(byText("Reveal Results"));
-const endBtn = byText("End Game");
+click(byText("Reveal results"));
+const endBtn = byText("End game");
 click(endBtn);
 check($(".score-table"), "scoreboard renders");
 check($(".score-row"), "scoreboard has rows");

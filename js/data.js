@@ -1,5 +1,5 @@
 /*
- * data.js — Word packs for The Imposter.
+ * data.js - Word packs for The Imposter.
  *
  * Each category has:
  *   - id:    stable identifier (used in settings persistence)

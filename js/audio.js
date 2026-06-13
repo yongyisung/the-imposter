@@ -1,5 +1,5 @@
 /*
- * audio.js — Tiny WebAudio sound engine.
+ * audio.js - Tiny WebAudio sound engine.
  *
  * Generates all sounds procedurally so the app stays dependency- and asset-free.
  * Respects a global mute flag persisted by the game. The AudioContext is created
