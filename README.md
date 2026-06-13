@@ -43,6 +43,16 @@ npm run dev        # python3 -m http.server 5173
 
 Then open <http://localhost:5173>. On a phone, "Add to Home Screen" to install it.
 
+### 📄 Single-file build (great for phones / sharing)
+
+```bash
+npm run build      # produces imposter-standalone.html
+```
+
+`imposter-standalone.html` inlines all CSS and JS into one file with **zero
+dependencies** — just open it directly in any browser (including mobile, offline).
+Download it to your phone and tap to play; no server required.
+
 ## 🎮 How to play
 
 1. **Setup** — choose player count, number of imposters, word packs, imposter

@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#0f0f1e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>The Imposter — Party Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+/* =========================================================================
+   The Imposter — styles
+   A dark, neon "party" theme. Mobile-first; scales up to tablet/desktop.
+   ========================================================================= */
+
+:root {
+  --bg: #0b0b18;
+  --bg-2: #12122a;
+  --surface: rgba(255, 255, 255, 0.05);
+  --surface-2: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.12);
+  --text: #f3f0ff;
+  --muted: #a39fc4;
+  --accent: #7c5cff;     /* violet */
+  --accent-2: #ff5c8a;   /* pink */
+  --good: #2fe6a0;       /* green */
+  --bad: #ff5b6e;        /* red */
+  --warn: #ffd166;       /* amber */
+  --gold: #ffc63d;
+  --radius: 20px;
+  --radius-sm: 12px;
+  --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  --tap: 0.96;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: radial-gradient(1200px 800px at 50% -10%, #1b1840 0%, var(--bg) 55%) fixed;
+  color: var(--text);
+  font-family: "Space Grotesk", system-ui, -apple-system, sans-serif;
+  overscroll-behavior: none;
+}
+
+body { display: flex; flex-direction: column; min-height: 100dvh; }
+
+h1, h2, h3, .display { font-family: "Fredoka", "Space Grotesk", sans-serif; }
+
+/* ---------- Animated backdrop ---------- */
+.backdrop { position: fixed; inset: 0; z-index: -1; overflow: hidden; }
+.blob {
+  position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.5;
+  animation: drift 18s ease-in-out infinite alternate;
+}
+.blob-1 { width: 46vmax; height: 46vmax; left: -12vmax; top: -10vmax; background: #4b2fc4; }
+.blob-2 { width: 38vmax; height: 38vmax; right: -10vmax; top: 20vmax; background: #c42f7a; animation-delay: -6s; }
+.blob-3 { width: 32vmax; height: 32vmax; left: 20vmax; bottom: -14vmax; background: #2f7ac4; animation-delay: -11s; }
+@keyframes drift {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(4vmax, 3vmax) scale(1.15); }
+}
+.grain {
+  position: absolute; inset: 0; opacity: 0.05; pointer-events: none;
+  background-image: radial-gradient(rgba(255,255,255,.6) 0.5px, transparent 0.5px);
+  background-size: 4px 4px;
+}
+
+/* ---------- Top bar ---------- */
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; padding: calc(10px + var(--safe-top)) 14px 10px;
+  backdrop-filter: blur(8px);
+}
+.brand { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+.brand-mark { font-size: 22px; filter: drop-shadow(0 2px 6px rgba(0,0,0,.5)); }
+.brand-text {
+  font-family: "Fredoka"; font-weight: 700; letter-spacing: 2px; font-size: 16px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.icon-btn {
+  width: 40px; height: 40px; flex: none; border-radius: 50%;
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  font-size: 20px; cursor: pointer; transition: transform .12s, background .2s;
+  display: grid; place-items: center;
+}
+.icon-btn:active { transform: scale(0.9); }
+.icon-btn[hidden] { visibility: hidden; }
+
+/* ---------- App shell ---------- */
+.app {
+  flex: 1; width: 100%; max-width: 560px; margin: 0 auto;
+  padding: 8px 18px calc(28px + var(--safe-bottom));
+  display: flex; flex-direction: column;
+}
+.screen { animation: screen-in .35s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes screen-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Typography helpers ---------- */
+.title { font-size: clamp(30px, 9vw, 44px); line-height: 1.05; margin: 4px 0 6px; }
+.subtitle { color: var(--muted); font-size: 15px; margin: 0 0 22px; line-height: 1.5; }
+.eyebrow { text-transform: uppercase; letter-spacing: 3px; font-size: 12px; color: var(--accent-2); font-weight: 700; }
+.center { text-align: center; }
+.muted { color: var(--muted); }
+
+/* ---------- Buttons ---------- */
+.btn {
+  appearance: none; border: none; cursor: pointer; width: 100%;
+  font-family: "Fredoka"; font-weight: 600; font-size: 18px; color: #fff;
+  padding: 16px 18px; border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  box-shadow: 0 12px 30px rgba(124, 92, 255, .35);
+  transition: transform .12s ease, filter .2s, box-shadow .2s;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.btn:active { transform: scale(var(--tap)); }
+.btn:disabled { opacity: .45; cursor: not-allowed; filter: grayscale(.4); }
+.btn.secondary {
+  background: var(--surface); border: 1px solid var(--border);
+  box-shadow: none; color: var(--text);
+}
+.btn.ghost { background: transparent; border: 1px solid var(--border); box-shadow: none; }
+.btn.danger { background: linear-gradient(135deg, #ff5b6e, #ff8a5b); box-shadow: 0 12px 30px rgba(255,91,110,.3); }
+.btn.good { background: linear-gradient(135deg, #2fe6a0, #2fb0e6); box-shadow: 0 12px 30px rgba(47,230,160,.25); }
+.btn.small { font-size: 15px; padding: 12px 14px; }
+.btn-row { display: flex; gap: 12px; }
+.btn-row .btn { flex: 1; }
+.stack { display: flex; flex-direction: column; gap: 12px; }
+
+/* ---------- Cards & panels ---------- */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow);
+}
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; }
+.panel h3 { margin: 0 0 12px; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+
+/* ---------- Home menu ---------- */
+.home-hero { text-align: center; margin: 8vh 0 6vh; }
+.home-logo { font-size: clamp(64px, 22vw, 110px); line-height: 1; filter: drop-shadow(0 10px 30px rgba(0,0,0,.6)); animation: float 4s ease-in-out infinite; }
+@keyframes float { 0%,100%{ transform: translateY(0) rotate(-4deg);} 50%{ transform: translateY(-12px) rotate(4deg);} }
+.home-title {
+  font-size: clamp(40px, 13vw, 72px); margin: 10px 0 2px; letter-spacing: 1px;
+  background: linear-gradient(90deg, #fff, var(--accent-2), var(--accent));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* ---------- Stepper (number control) ---------- */
+.stepper { display: flex; align-items: center; gap: 14px; }
+.stepper button {
+  width: 46px; height: 46px; border-radius: 14px; font-size: 26px; font-weight: 700;
+  background: var(--surface-2); border: 1px solid var(--border); color: var(--text); cursor: pointer;
+  transition: transform .1s;
+}
+.stepper button:active { transform: scale(.88); }
+.stepper button:disabled { opacity: .3; }
+.stepper .value { font-family: "Fredoka"; font-size: 30px; min-width: 48px; text-align: center; }
+.field { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; }
+.field + .field { border-top: 1px solid var(--border); }
+.field .label { font-size: 15px; }
+.field .hint { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* ---------- Category chips ---------- */
+.chips { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.chip {
+  display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer;
+  border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface);
+  transition: transform .1s, border-color .2s, background .2s; user-select: none;
+}
+.chip:active { transform: scale(.97); }
+.chip .emoji { font-size: 22px; }
+.chip .name { font-size: 14px; font-weight: 500; }
+.chip.on { border-color: var(--accent); background: linear-gradient(135deg, rgba(124,92,255,.25), rgba(255,92,138,.18)); }
+.chip .tick { margin-left: auto; opacity: 0; color: var(--accent); font-weight: 700; }
+.chip.on .tick { opacity: 1; }
+
+/* ---------- Toggle switch ---------- */
+.switch { position: relative; width: 52px; height: 30px; flex: none; }
+.switch input { display: none; }
+.switch .track { position: absolute; inset: 0; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); transition: background .2s; }
+.switch .thumb { position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; transition: transform .2s; box-shadow: 0 2px 6px rgba(0,0,0,.4); }
+.switch input:checked + .track { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-color: transparent; }
+.switch input:checked + .track + .thumb { transform: translateX(22px); }
+
+/* ---------- Segmented control ---------- */
+.segmented { display: flex; background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px; padding: 4px; gap: 4px; }
+.segmented button { flex: 1; border: none; background: transparent; color: var(--muted); font-family: "Fredoka"; font-weight: 600; padding: 9px 6px; border-radius: 10px; cursor: pointer; font-size: 14px; transition: .2s; }
+.segmented button.on { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; }
+
+/* ---------- Player name inputs ---------- */
+.players-list { display: flex; flex-direction: column; gap: 10px; }
+.player-input { display: flex; align-items: center; gap: 10px; }
+.player-input .num { width: 30px; height: 30px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); font-size: 13px; color: var(--muted); }
+.player-input input {
+  flex: 1; background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  padding: 12px 14px; border-radius: var(--radius-sm); font-size: 16px; font-family: inherit;
+}
+.player-input input:focus { outline: none; border-color: var(--accent); }
+
+/* ---------- Reveal / pass-and-play card ---------- */
+.reveal-wrap { flex: 1; display: flex; flex-direction: column; }
+.reveal-progress { text-align: center; color: var(--muted); margin-bottom: 14px; font-size: 14px; }
+.flip-card { perspective: 1400px; flex: 1; min-height: 380px; cursor: pointer; }
+.flip-inner { position: relative; width: 100%; height: 100%; transition: transform .6s cubic-bezier(.2,.8,.2,1); transform-style: preserve-3d; }
+.flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+.flip-face {
+  position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  border-radius: 28px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 28px; text-align: center; border: 1px solid var(--border); box-shadow: var(--shadow);
+}
+.flip-front { background: linear-gradient(160deg, #1d1b3a, #16142c); }
+.flip-front .who { font-size: 14px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+.flip-front .name { font-family: "Fredoka"; font-size: clamp(30px, 9vw, 46px); margin: 8px 0 18px; }
+.flip-front .tap-hint { color: var(--accent-2); font-weight: 600; font-size: 14px; animation: pulse 1.6s infinite; }
+.flip-front .lock { font-size: 60px; margin-bottom: 14px; }
+@keyframes pulse { 0%,100%{opacity:.5;} 50%{opacity:1;} }
+.flip-back { transform: rotateY(180deg); }
+.flip-back.crew { background: linear-gradient(160deg, #14302a, #0f2420); }
+.flip-back.imposter { background: linear-gradient(160deg, #3a1420, #2a0f18); }
+.role-label { text-transform: uppercase; letter-spacing: 3px; font-size: 13px; font-weight: 700; }
+.flip-back.crew .role-label { color: var(--good); }
+.flip-back.imposter .role-label { color: var(--bad); }
+.secret-word { font-family: "Fredoka"; font-size: clamp(34px, 11vw, 58px); margin: 10px 0; line-height: 1.05; }
+.secret-cat { color: var(--muted); font-size: 15px; }
+.imposter-mark { font-size: 70px; margin-bottom: 6px; animation: shake 2.4s infinite; }
+@keyframes shake { 0%,92%,100%{transform:rotate(0);} 94%{transform:rotate(-8deg);} 96%{transform:rotate(8deg);} 98%{transform:rotate(-6deg);} }
+.imposter-hint { margin-top: 10px; font-size: 14px; color: var(--warn); }
+.tap-to-hide { margin-top: 18px; font-size: 13px; color: var(--muted); }
+
+/* ---------- Timer ---------- */
+.timer-ring { display: grid; place-items: center; margin: 6px auto 18px; }
+.timer-ring svg { transform: rotate(-90deg); }
+.timer-ring .track-c { stroke: var(--surface-2); }
+.timer-ring .prog-c { stroke: url(#tg); stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+.timer-label { font-family: "Fredoka"; font-size: 44px; }
+.timer-sub { color: var(--muted); font-size: 14px; }
+.timer-ring.low .timer-label { color: var(--bad); }
+
+.turn-order { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 8px 0 18px; }
+.turn-pill { background: var(--surface); border: 1px solid var(--border); padding: 8px 12px; border-radius: 999px; font-size: 13px; }
+.turn-pill.first { border-color: var(--accent-2); background: rgba(255,92,138,.15); }
+.turn-pill .order-no { color: var(--muted); margin-right: 6px; }
+
+/* ---------- Voting ---------- */
+.vote-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.vote-row { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; }
+.vote-row .pname { flex: 1; font-size: 16px; }
+.vote-counter { display: flex; align-items: center; gap: 10px; }
+.vote-counter button { width: 38px; height: 38px; border-radius: 10px; font-size: 20px; background: var(--surface-2); border: 1px solid var(--border); color: var(--text); cursor: pointer; }
+.vote-counter .n { min-width: 22px; text-align: center; font-family: "Fredoka"; font-size: 20px; }
+.vote-total { text-align: center; color: var(--muted); margin: 12px 0; font-size: 14px; }
+
+/* ---------- Results ---------- */
+.result-banner { text-align: center; padding: 22px; border-radius: var(--radius); margin-bottom: 16px; }
+.result-banner.crew { background: linear-gradient(160deg, rgba(47,230,160,.2), rgba(47,176,230,.12)); border: 1px solid rgba(47,230,160,.4); }
+.result-banner.imposter { background: linear-gradient(160deg, rgba(255,91,110,.2), rgba(255,138,91,.12)); border: 1px solid rgba(255,91,110,.4); }
+.result-emoji { font-size: 60px; }
+.result-title { font-family: "Fredoka"; font-size: 30px; margin: 6px 0 2px; }
+.reveal-line { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.reveal-line:last-child { border-bottom: none; }
+.reveal-line .k { color: var(--muted); }
+.reveal-line .v { font-weight: 600; text-align: right; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.tag.imp { background: rgba(255,91,110,.2); color: var(--bad); }
+.tag.crew { background: rgba(47,230,160,.18); color: var(--good); }
+
+/* ---------- Scoreboard ---------- */
+.score-table { width: 100%; }
+.score-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.score-row:last-child { border-bottom: none; }
+.score-rank { width: 28px; font-family: "Fredoka"; font-size: 18px; color: var(--muted); text-align: center; }
+.score-row.lead .score-rank { color: var(--gold); }
+.score-name { flex: 1; font-size: 16px; }
+.score-pts { font-family: "Fredoka"; font-size: 22px; }
+.medal { font-size: 18px; }
+
+/* ---------- Misc ---------- */
+.spacer { flex: 1; }
+.divider { height: 1px; background: var(--border); margin: 18px 0; }
+.kbd { font-family: monospace; background: var(--surface-2); border: 1px solid var(--border); padding: 1px 6px; border-radius: 6px; font-size: 13px; }
+.list { padding-left: 18px; margin: 0; }
+.list li { margin: 8px 0; line-height: 1.5; color: var(--muted); }
+.list li b { color: var(--text); }
+.badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+
+/* ---------- Toast ---------- */
+.toast {
+  position: fixed; left: 50%; bottom: calc(24px + var(--safe-bottom)); transform: translateX(-50%) translateY(20px);
+  background: rgba(20,20,40,.95); border: 1px solid var(--border); color: var(--text);
+  padding: 12px 18px; border-radius: 999px; font-size: 14px; opacity: 0; pointer-events: none;
+  transition: opacity .25s, transform .25s; z-index: 50; box-shadow: var(--shadow); max-width: 90vw;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ---------- Confetti ---------- */
+.confetti { position: fixed; inset: 0; pointer-events: none; z-index: 40; overflow: hidden; }
+.confetti i { position: absolute; top: -12px; width: 9px; height: 14px; opacity: .9; animation: fall linear forwards; }
+@keyframes fall { to { transform: translateY(105vh) rotate(720deg); opacity: .2; } }
+
+@media (min-width: 600px) {
+  .chips { grid-template-columns: repeat(3, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001s !important; transition-duration: .05s !important; }
+}
+
+  </style>
+</head>
+<body>
+  <div class="backdrop" aria-hidden="true">
+    <span class="blob blob-1"></span>
+    <span class="blob blob-2"></span>
+    <span class="blob blob-3"></span>
+    <div class="grain"></div>
+  </div>
+  <header class="topbar">
+    <button class="icon-btn" id="backBtn" aria-label="Back" hidden>‹</button>
+    <div class="brand" id="brandHome" role="button" tabindex="0">
+      <span class="brand-mark">🕵️</span>
+      <span class="brand-text">THE&nbsp;IMPOSTER</span>
+    </div>
+    <button class="icon-btn" id="muteBtn" aria-label="Toggle sound">🔊</button>
+  </header>
+  <main id="app" class="app"></main>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script>
+/*
+ * data.js — Word packs for The Imposter.
+ *
+ * Each category has:
+ *   - id:    stable identifier (used in settings persistence)
+ *   - name:  display label
+ *   - icon:  emoji shown on the chip
+ *   - words: array of secret words. Each word may carry an optional hint that is
+ *            shown to the imposter when "Hint mode" is enabled. Hints are written
+ *            to be suggestive but never a giveaway.
+ *
+ * Words are intentionally concrete and guessable so that one-word clues are fun.
+ */
+
+const GAME_DATA = {
+  categories: [
+    {
+      id: "food",
+      name: "Food & Drink",
+      icon: "🍔",
+      words: [
+        { word: "Pizza", hint: "Italian" },
+        { word: "Sushi", hint: "Japanese" },
+        { word: "Hamburger", hint: "Fast food" },
+        { word: "Tacos", hint: "Mexican" },
+        { word: "Pancakes", hint: "Breakfast" },
+        { word: "Spaghetti", hint: "Pasta" },
+        { word: "Ice Cream", hint: "Dessert" },
+        { word: "Popcorn", hint: "Cinema snack" },
+        { word: "Coffee", hint: "Morning drink" },
+        { word: "Chocolate", hint: "Sweet" },
+        { word: "Watermelon", hint: "Summer fruit" },
+        { word: "Pickle", hint: "Sour" },
+        { word: "Bacon", hint: "Breakfast meat" },
+        { word: "Ramen", hint: "Noodle soup" },
+        { word: "Doughnut", hint: "Has a hole" },
+        { word: "Avocado", hint: "Green, trendy" },
+        { word: "Burrito", hint: "Wrapped" },
+        { word: "Cheese", hint: "Dairy" },
+        { word: "Lemonade", hint: "Cold drink" },
+        { word: "Cereal", hint: "With milk" },
+      ],
+    },
+    {
+      id: "animals",
+      name: "Animals",
+      icon: "🦁",
+      words: [
+        { word: "Elephant", hint: "Very big" },
+        { word: "Penguin", hint: "Cold places" },
+        { word: "Kangaroo", hint: "Australia" },
+        { word: "Octopus", hint: "Many arms" },
+        { word: "Giraffe", hint: "Tall" },
+        { word: "Dolphin", hint: "Ocean" },
+        { word: "Cheetah", hint: "Very fast" },
+        { word: "Owl", hint: "Nocturnal" },
+        { word: "Sloth", hint: "Slow" },
+        { word: "Shark", hint: "Predator" },
+        { word: "Hedgehog", hint: "Spiky" },
+        { word: "Flamingo", hint: "Pink" },
+        { word: "Chameleon", hint: "Color change" },
+        { word: "Panda", hint: "Bamboo" },
+        { word: "Crocodile", hint: "Reptile" },
+        { word: "Bumblebee", hint: "Buzzes" },
+        { word: "Wolf", hint: "Pack animal" },
+        { word: "Jellyfish", hint: "Stings" },
+        { word: "Hamster", hint: "Pet, small" },
+        { word: "Eagle", hint: "Bird of prey" },
+      ],
+    },
+    {
+      id: "places",
+      name: "Places",
+      icon: "🗺️",
+      words: [
+        { word: "Beach", hint: "Sandy" },
+        { word: "Hospital", hint: "Health" },
+        { word: "Library", hint: "Quiet" },
+        { word: "Airport", hint: "Travel" },
+        { word: "Museum", hint: "Exhibits" },
+        { word: "Casino", hint: "Gambling" },
+        { word: "Gym", hint: "Fitness" },
+        { word: "Cinema", hint: "Movies" },
+        { word: "Zoo", hint: "Animals" },
+        { word: "Bakery", hint: "Bread" },
+        { word: "Volcano", hint: "Eruption" },
+        { word: "Desert", hint: "Dry" },
+        { word: "Castle", hint: "Medieval" },
+        { word: "Submarine", hint: "Underwater" },
+        { word: "Stadium", hint: "Sports" },
+        { word: "Lighthouse", hint: "Coastal" },
+        { word: "Pharmacy", hint: "Medicine" },
+        { word: "Aquarium", hint: "Fish tanks" },
+        { word: "Subway", hint: "Underground" },
+        { word: "Rooftop", hint: "Up high" },
+      ],
+    },
+    {
+      id: "movies",
+      name: "Movies & TV",
+      icon: "🎬",
+      words: [
+        { word: "Titanic", hint: "Ship" },
+        { word: "Jurassic Park", hint: "Dinosaurs" },
+        { word: "The Lion King", hint: "Animated" },
+        { word: "Star Wars", hint: "Space" },
+        { word: "Frozen", hint: "Snow" },
+        { word: "Harry Potter", hint: "Magic" },
+        { word: "Avatar", hint: "Blue aliens" },
+        { word: "The Matrix", hint: "Simulation" },
+        { word: "Breaking Bad", hint: "TV drama" },
+        { word: "Friends", hint: "Sitcom" },
+        { word: "Stranger Things", hint: "80s, eerie" },
+        { word: "Game of Thrones", hint: "Dragons" },
+        { word: "Spider-Man", hint: "Superhero" },
+        { word: "Toy Story", hint: "Toys" },
+        { word: "The Office", hint: "Workplace" },
+        { word: "Pirates of the Caribbean", hint: "Pirates" },
+        { word: "Shrek", hint: "Ogre" },
+        { word: "Inception", hint: "Dreams" },
+        { word: "Squid Game", hint: "Survival" },
+        { word: "Finding Nemo", hint: "Fish" },
+      ],
+    },
+    {
+      id: "sports",
+      name: "Sports",
+      icon: "⚽",
+      words: [
+        { word: "Soccer", hint: "Ball, feet" },
+        { word: "Basketball", hint: "Hoop" },
+        { word: "Tennis", hint: "Racket" },
+        { word: "Boxing", hint: "Gloves" },
+        { word: "Golf", hint: "Clubs" },
+        { word: "Swimming", hint: "Pool" },
+        { word: "Surfing", hint: "Waves" },
+        { word: "Skiing", hint: "Snow" },
+        { word: "Bowling", hint: "Pins" },
+        { word: "Archery", hint: "Bow" },
+        { word: "Cycling", hint: "Bike" },
+        { word: "Gymnastics", hint: "Flips" },
+        { word: "Hockey", hint: "Puck" },
+        { word: "Cricket", hint: "Bat, wicket" },
+        { word: "Climbing", hint: "Rocks" },
+        { word: "Skateboarding", hint: "Board" },
+        { word: "Volleyball", hint: "Net" },
+        { word: "Fencing", hint: "Sword" },
+        { word: "Marathon", hint: "Long run" },
+        { word: "Darts", hint: "Throwing" },
+      ],
+    },
+    {
+      id: "objects",
+      name: "Everyday Objects",
+      icon: "🧦",
+      words: [
+        { word: "Umbrella", hint: "Rain" },
+        { word: "Toothbrush", hint: "Hygiene" },
+        { word: "Candle", hint: "Light" },
+        { word: "Mirror", hint: "Reflection" },
+        { word: "Scissors", hint: "Cutting" },
+        { word: "Pillow", hint: "Sleep" },
+        { word: "Backpack", hint: "Carry" },
+        { word: "Stapler", hint: "Office" },
+        { word: "Headphones", hint: "Audio" },
+        { word: "Wallet", hint: "Money" },
+        { word: "Ladder", hint: "Climb" },
+        { word: "Compass", hint: "Direction" },
+        { word: "Battery", hint: "Power" },
+        { word: "Telescope", hint: "Stars" },
+        { word: "Vacuum", hint: "Cleaning" },
+        { word: "Hammer", hint: "Tool" },
+        { word: "Sunglasses", hint: "Eyes" },
+        { word: "Keyboard", hint: "Typing" },
+        { word: "Thermometer", hint: "Temperature" },
+        { word: "Suitcase", hint: "Packing" },
+      ],
+    },
+    {
+      id: "jobs",
+      name: "Jobs",
+      icon: "🧑‍🚀",
+      words: [
+        { word: "Astronaut", hint: "Space" },
+        { word: "Firefighter", hint: "Emergencies" },
+        { word: "Chef", hint: "Kitchen" },
+        { word: "Pilot", hint: "Aircraft" },
+        { word: "Surgeon", hint: "Operations" },
+        { word: "Teacher", hint: "School" },
+        { word: "Detective", hint: "Mysteries" },
+        { word: "Plumber", hint: "Pipes" },
+        { word: "Magician", hint: "Tricks" },
+        { word: "Lawyer", hint: "Court" },
+        { word: "Barber", hint: "Hair" },
+        { word: "Farmer", hint: "Crops" },
+        { word: "Journalist", hint: "News" },
+        { word: "Architect", hint: "Buildings" },
+        { word: "Dentist", hint: "Teeth" },
+        { word: "Lifeguard", hint: "Water safety" },
+        { word: "Electrician", hint: "Wiring" },
+        { word: "Photographer", hint: "Camera" },
+        { word: "Veterinarian", hint: "Animals" },
+        { word: "Carpenter", hint: "Wood" },
+      ],
+    },
+    {
+      id: "tech",
+      name: "Technology",
+      icon: "💻",
+      words: [
+        { word: "Smartphone", hint: "Pocket device" },
+        { word: "Wi-Fi", hint: "Wireless" },
+        { word: "Robot", hint: "Automation" },
+        { word: "Drone", hint: "Flying" },
+        { word: "Bluetooth", hint: "Pairing" },
+        { word: "Password", hint: "Security" },
+        { word: "Emoji", hint: "Messaging" },
+        { word: "Podcast", hint: "Audio show" },
+        { word: "Hashtag", hint: "Social media" },
+        { word: "Selfie", hint: "Photo" },
+        { word: "Algorithm", hint: "Steps" },
+        { word: "Firewall", hint: "Protection" },
+        { word: "Cloud", hint: "Storage" },
+        { word: "Joystick", hint: "Gaming" },
+        { word: "Touchscreen", hint: "Tap" },
+        { word: "Webcam", hint: "Video" },
+        { word: "Server", hint: "Hosting" },
+        { word: "Charger", hint: "Power up" },
+        { word: "Spreadsheet", hint: "Rows, columns" },
+        { word: "Printer", hint: "Paper" },
+      ],
+    },
+    {
+      id: "nature",
+      name: "Nature",
+      icon: "🌿",
+      words: [
+        { word: "Rainbow", hint: "Colors" },
+        { word: "Waterfall", hint: "Falling water" },
+        { word: "Cactus", hint: "Prickly" },
+        { word: "Glacier", hint: "Ice" },
+        { word: "Tornado", hint: "Spinning" },
+        { word: "Coral Reef", hint: "Underwater" },
+        { word: "Mushroom", hint: "Fungus" },
+        { word: "Lightning", hint: "Storm" },
+        { word: "Canyon", hint: "Deep gorge" },
+        { word: "Sunflower", hint: "Tall flower" },
+        { word: "Iceberg", hint: "Floating ice" },
+        { word: "Meteor", hint: "Falling rock" },
+        { word: "Quicksand", hint: "Sinking" },
+        { word: "Geyser", hint: "Hot spring" },
+        { word: "Snowflake", hint: "Unique" },
+        { word: "Jungle", hint: "Dense forest" },
+        { word: "Aurora", hint: "Northern lights" },
+        { word: "Swamp", hint: "Wetland" },
+        { word: "Volcano", hint: "Lava" },
+        { word: "Tide", hint: "Ocean rise" },
+      ],
+    },
+    {
+      id: "spooky",
+      name: "Spooky",
+      icon: "👻",
+      words: [
+        { word: "Vampire", hint: "Fangs" },
+        { word: "Zombie", hint: "Undead" },
+        { word: "Werewolf", hint: "Full moon" },
+        { word: "Ghost", hint: "Haunting" },
+        { word: "Witch", hint: "Spells" },
+        { word: "Mummy", hint: "Wrapped" },
+        { word: "Skeleton", hint: "Bones" },
+        { word: "Haunted House", hint: "Scary place" },
+        { word: "Pumpkin", hint: "Carved" },
+        { word: "Spider", hint: "Web" },
+        { word: "Frankenstein", hint: "Stitched" },
+        { word: "Graveyard", hint: "Tombstones" },
+        { word: "Cauldron", hint: "Brewing" },
+        { word: "Black Cat", hint: "Bad luck" },
+        { word: "Bat", hint: "Flies at night" },
+        { word: "Cobweb", hint: "Dusty" },
+        { word: "Potion", hint: "Bubbling" },
+        { word: "Scarecrow", hint: "Field" },
+        { word: "Goblin", hint: "Mischief" },
+        { word: "Crypt", hint: "Tomb" },
+      ],
+    },
+  ],
+};
+
+// Expose to the global scope for the non-module script setup.
+window.GAME_DATA = GAME_DATA;
+
+  </script>
+  <script>
+/*
+ * audio.js — Tiny WebAudio sound engine.
+ *
+ * Generates all sounds procedurally so the app stays dependency- and asset-free.
+ * Respects a global mute flag persisted by the game. The AudioContext is created
+ * lazily on first user gesture to satisfy browser autoplay policies.
+ */
+
+const SFX = (() => {
+  let ctx = null;
+  let muted = false;
+
+  function ensure() {
+    if (!ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) ctx = new AC();
+    }
+    if (ctx && ctx.state === "suspended") ctx.resume();
+    return ctx;
+  }
+
+  // A single tone with an ADSR-ish envelope.
+  function tone({ freq = 440, dur = 0.15, type = "sine", gain = 0.2, when = 0, slideTo = null }) {
+    const ac = ensure();
+    if (!ac || muted) return;
+    const t0 = ac.currentTime + when;
+    const osc = ac.createOscillator();
+    const g = ac.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t0);
+    if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, t0 + dur);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(gain, t0 + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    osc.connect(g).connect(ac.destination);
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.02);
+  }
+
+  function chord(freqs, opts = {}) {
+    freqs.forEach((f, i) => tone({ ...opts, freq: f, when: (opts.stagger || 0) * i }));
+  }
+
+  return {
+    unlock() { ensure(); },
+    setMuted(v) { muted = !!v; },
+    isMuted() { return muted; },
+
+    tap() { tone({ freq: 320, dur: 0.06, type: "triangle", gain: 0.12 }); },
+    nav() { tone({ freq: 480, dur: 0.08, type: "triangle", gain: 0.12, slideTo: 620 }); },
+    reveal() { chord([523.25, 659.25], { dur: 0.18, type: "sine", gain: 0.16, stagger: 0.05 }); },
+    hide() { tone({ freq: 300, dur: 0.12, type: "sine", gain: 0.12, slideTo: 180 }); },
+    tick() { tone({ freq: 900, dur: 0.03, type: "square", gain: 0.05 }); },
+    warn() { tone({ freq: 220, dur: 0.18, type: "sawtooth", gain: 0.12 }); },
+    vote() { tone({ freq: 600, dur: 0.07, type: "triangle", gain: 0.14, slideTo: 760 }); },
+    crewWin() { chord([523.25, 659.25, 783.99, 1046.5], { dur: 0.4, type: "sine", gain: 0.18, stagger: 0.09 }); },
+    imposterWin() { chord([440, 415.3, 392], { dur: 0.45, type: "sawtooth", gain: 0.14, stagger: 0.12 }); },
+    drumroll() {
+      for (let i = 0; i < 18; i++) tone({ freq: 120, dur: 0.04, type: "square", gain: 0.06, when: i * 0.06 });
+    },
+  };
+})();
+
+window.SFX = SFX;
+
+  </script>
+  <script>
+/* =========================================================================
+   game.js — The Imposter (pass-and-play party game)
+
+   A self-contained single-page app. No build step, no framework: it renders
+   screens into #app with a tiny hyperscript helper and a screen state machine.
+
+   Flow:  home → setup → reveal → discuss → vote → results → scoreboard
+   ========================================================================= */
+(() => {
+  "use strict";
+
+  /* ---------- tiny DOM helper (hyperscript) ---------- */
+  function h(tag, props, ...kids) {
+    const e = document.createElement(tag);
+    if (props) {
+      for (const [k, v] of Object.entries(props)) {
+        if (v == null || v === false) continue;
+        if (k === "class") e.className = v;
+        else if (k === "html") e.innerHTML = v;
+        else if (k === "dataset") Object.assign(e.dataset, v);
+        else if (k.startsWith("on") && typeof v === "function") e.addEventListener(k.slice(2).toLowerCase(), v);
+        else if (k in e && k !== "list") { try { e[k] = v; } catch { e.setAttribute(k, v); } }
+        else e.setAttribute(k, v);
+      }
+    }
+    for (const kid of kids.flat()) {
+      if (kid == null || kid === false) continue;
+      e.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+    }
+    return e;
+  }
+
+  /* ---------- utilities ---------- */
+  const rand = (n) => Math.floor(Math.random() * n);
+  const pick = (arr) => arr[rand(arr.length)];
+  const shuffle = (arr) => {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = rand(i + 1);
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  };
+  const norm = (s) => (s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+  /* ---------- persistence ---------- */
+  const LS = {
+    get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+  };
+
+  /* ---------- global state ---------- */
+  const DEFAULT_SETTINGS = {
+    numPlayers: 4,
+    numImposters: 1,
+    categories: GAME_DATA.categories.map((c) => c.id), // all selected by default
+    imposterMode: "category", // 'blind' | 'category' | 'hint'
+    timerMinutes: 2,           // 0 = off
+    names: [],
+  };
+
+  const state = {
+    settings: { ...DEFAULT_SETTINGS, ...LS.get("imposter.settings", {}) },
+    scores: {},        // name -> points (cumulative across rounds)
+    round: 0,
+    inGame: false,
+    // per-round:
+    players: [],       // [{name, role:'crew'|'imposter'}]
+    secret: null,      // {word, hint, category}
+    turnOrder: [],     // indices into players
+    votes: {},         // index -> count
+  };
+
+  // Normalise persisted settings (categories may reference removed ids).
+  state.settings.categories = state.settings.categories.filter((id) =>
+    GAME_DATA.categories.some((c) => c.id === id));
+  if (state.settings.categories.length === 0) state.settings.categories = DEFAULT_SETTINGS.categories.slice();
+
+  /* ---------- mount points ---------- */
+  const app = document.getElementById("app");
+  const backBtn = document.getElementById("backBtn");
+  const muteBtn = document.getElementById("muteBtn");
+  const toastEl = document.getElementById("toast");
+
+  /* ---------- sound / mute ---------- */
+  let muted = LS.get("imposter.muted", false);
+  SFX.setMuted(muted);
+  const syncMute = () => { muteBtn.textContent = muted ? "🔇" : "🔊"; };
+  syncMute();
+  muteBtn.addEventListener("click", () => {
+    muted = !muted; SFX.setMuted(muted); LS.set("imposter.muted", muted);
+    if (!muted) SFX.tap();
+    syncMute();
+  });
+  // Unlock audio on first interaction.
+  document.addEventListener("pointerdown", () => SFX.unlock(), { once: true });
+
+  /* ---------- toast ---------- */
+  let toastT;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastT);
+    toastT = setTimeout(() => toastEl.classList.remove("show"), 2200);
+  }
+
+  /* ---------- confetti ---------- */
+  function confetti(count = 90) {
+    const wrap = h("div", { class: "confetti" });
+    const colors = ["#7c5cff", "#ff5c8a", "#2fe6a0", "#ffd166", "#2fb0e6"];
+    for (let i = 0; i < count; i++) {
+      const c = h("i");
+      c.style.left = Math.random() * 100 + "vw";
+      c.style.background = pick(colors);
+      c.style.animationDuration = 2 + Math.random() * 2 + "s";
+      c.style.animationDelay = Math.random() * 0.6 + "s";
+      c.style.transform = `rotate(${rand(360)}deg)`;
+      wrap.append(c);
+    }
+    document.body.append(wrap);
+    setTimeout(() => wrap.remove(), 4200);
+  }
+
+  /* ---------- navigation ---------- */
+  let current = "home";
+  let cleanup = null; // teardown for screen-scoped timers/listeners
+
+  function go(screen, opts) {
+    if (cleanup) { cleanup(); cleanup = null; }
+    current = screen;
+    SFX.nav();
+    render(screen, opts);
+  }
+
+  backBtn.addEventListener("click", () => {
+    SFX.tap();
+    if (backHandlers[current]) backHandlers[current]();
+  });
+  const backHandlers = {
+    setup: () => go("home"),
+    howto: () => go("home"),
+    reveal: () => confirmAbort(),
+    discuss: () => go("reveal"),
+    vote: () => go("discuss"),
+    results: () => {},
+  };
+  function setBack(show) { backBtn.hidden = !show; }
+
+  document.getElementById("brandHome").addEventListener("click", () => {
+    if (state.inGame && current !== "home" && current !== "scoreboard") {
+      if (!confirm("Leave the current game? Scores will be lost.")) return;
+    }
+    state.inGame = false;
+    go("home");
+  });
+
+  function confirmAbort() {
+    if (confirm("Abandon this round and return to setup?")) { state.inGame = false; go("setup"); }
+  }
+
+  /* =======================================================================
+     SCREEN: HOME
+     ===================================================================== */
+  function renderHome() {
+    setBack(false);
+    const hasScores = Object.keys(state.scores).length > 0;
+    return h("div", { class: "screen center" },
+      h("div", { class: "home-hero" },
+        h("div", { class: "home-logo" }, "🕵️"),
+        h("h1", { class: "home-title" }, "The Imposter"),
+        h("p", { class: "subtitle" }, "Everyone gets the secret word… except the imposter. Drop clues, sniff out the faker, don't blow your cover."),
+      ),
+      h("div", { class: "stack" },
+        h("button", { class: "btn", onClick: () => go("setup") }, "▶  New Game"),
+        hasScores && h("button", { class: "btn secondary", onClick: () => go("scoreboard") }, "🏆  Scoreboard"),
+        h("button", { class: "btn ghost", onClick: () => go("howto") }, "📖  How to Play"),
+      ),
+      h("p", { class: "muted center", style: "margin-top:26px;font-size:12px" },
+        GAME_DATA.categories.length + " word packs · pass-and-play · 3–12 players"),
+    );
+  }
+
+  /* =======================================================================
+     SCREEN: HOW TO PLAY
+     ===================================================================== */
+  function renderHowto() {
+    setBack(true);
+    return h("div", { class: "screen" },
+      h("p", { class: "eyebrow" }, "How to play"),
+      h("h2", { class: "title", style: "font-size:32px" }, "Bluff. Deduce. Survive."),
+      h("div", { class: "panel" },
+        h("h3", null, "🎯 The setup"),
+        h("ul", { class: "list" },
+          h("li", null, h("b", null, "Crew"), " members all see the same ", h("b", null, "secret word"), "."),
+          h("li", null, "One or more ", h("b", null, "imposters"), " do not — they must fake it."),
+          h("li", null, "Pass the device around so each player privately sees their card."),
+        )),
+      h("div", { class: "panel" },
+        h("h3", null, "💬 The round"),
+        h("ul", { class: "list" },
+          h("li", null, "Going in turn order, everyone says ", h("b", null, "one word"), " related to the secret word."),
+          h("li", null, "Crew: prove you know it — but don't be so obvious the imposter guesses it."),
+          h("li", null, "Imposter: blend in. Stay vague, then steal a real clue and echo it."),
+        )),
+      h("div", { class: "panel" },
+        h("h3", null, "🗳️ The vote"),
+        h("ul", { class: "list" },
+          h("li", null, "Discuss, then vote for who you think is the imposter."),
+          h("li", null, "Most votes gets ejected. A tie means nobody is ejected."),
+        )),
+      h("div", { class: "panel" },
+        h("h3", null, "🏆 Scoring"),
+        h("ul", { class: "list" },
+          h("li", null, "Eject an imposter → every ", h("b", null, "crew"), " member scores ", h("b", null, "+1"), "."),
+          h("li", null, "Caught imposter gets one guess at the word — nail it for a ", h("b", null, "+2"), " steal."),
+          h("li", null, "Imposter survives (wrong eject or tie) → each ", h("b", null, "imposter"), " scores ", h("b", null, "+2"), "."),
+        )),
+      h("button", { class: "btn", style: "margin-top:8px", onClick: () => go("setup") }, "Let's play →"),
+    );
+  }
+
+  /* =======================================================================
+     SCREEN: SETUP
+     ===================================================================== */
+  function maxImposters(n) { return Math.max(1, n - 2); } // keep at least 2 crew
+
+  function renderSetup() {
+    setBack(true);
+    const s = state.settings;
+    s.numPlayers = clamp(s.numPlayers, 3, 12);
+    s.numImposters = clamp(s.numImposters, 1, maxImposters(s.numPlayers));
+
+    const screen = h("div", { class: "screen" });
+
+    // --- Players ---
+    const playersStepperVal = h("span", { class: "value" }, s.numPlayers);
+    const impStepperVal = h("span", { class: "value" }, s.numImposters);
+
+    function refreshNumbers() {
+      playersStepperVal.textContent = s.numPlayers;
+      impStepperVal.textContent = s.numImposters;
+      impMinus.disabled = s.numImposters <= 1;
+      impPlus.disabled = s.numImposters >= maxImposters(s.numPlayers);
+      pMinus.disabled = s.numPlayers <= 3;
+      pPlus.disabled = s.numPlayers >= 12;
+      renderNameInputs();
+    }
+
+    const pMinus = h("button", { onClick: () => { s.numPlayers = clamp(s.numPlayers - 1, 3, 12); s.numImposters = clamp(s.numImposters, 1, maxImposters(s.numPlayers)); SFX.tap(); refreshNumbers(); } }, "–");
+    const pPlus = h("button", { onClick: () => { s.numPlayers = clamp(s.numPlayers + 1, 3, 12); SFX.tap(); refreshNumbers(); } }, "+");
+    const impMinus = h("button", { onClick: () => { s.numImposters = clamp(s.numImposters - 1, 1, maxImposters(s.numPlayers)); SFX.tap(); refreshNumbers(); } }, "–");
+    const impPlus = h("button", { onClick: () => { s.numImposters = clamp(s.numImposters + 1, 1, maxImposters(s.numPlayers)); SFX.tap(); refreshNumbers(); } }, "+");
+
+    const playersPanel = h("div", { class: "panel" },
+      h("div", { class: "field" },
+        h("div", null, h("div", { class: "label" }, "Players"), h("div", { class: "hint" }, "3 to 12")),
+        h("div", { class: "stepper" }, pMinus, playersStepperVal, pPlus)),
+      h("div", { class: "field" },
+        h("div", null, h("div", { class: "label" }, "Imposters"), h("div", { class: "hint" }, "the fakers")),
+        h("div", { class: "stepper" }, impMinus, impStepperVal, impPlus)),
+    );
+
+    // --- Names (optional) ---
+    const namesList = h("div", { class: "players-list" });
+    function renderNameInputs() {
+      namesList.innerHTML = "";
+      for (let i = 0; i < s.numPlayers; i++) {
+        const input = h("input", {
+          type: "text", maxlength: 16, placeholder: "Player " + (i + 1),
+          value: s.names[i] || "",
+          oninput: (e) => { s.names[i] = e.target.value; },
+        });
+        namesList.append(h("div", { class: "player-input" },
+          h("div", { class: "num" }, i + 1), input));
+      }
+    }
+    const namesPanel = h("div", { class: "panel" },
+      h("h3", null, "🧑‍🤝‍🧑 Player names ", h("span", { class: "muted", style: "font-weight:400;font-size:12px" }, "(optional)")),
+      namesList);
+
+    // --- Categories ---
+    const chips = h("div", { class: "chips" });
+    GAME_DATA.categories.forEach((c) => {
+      const on = s.categories.includes(c.id);
+      const chip = h("div", { class: "chip" + (on ? " on" : ""), dataset: { id: c.id } },
+        h("span", { class: "emoji" }, c.icon),
+        h("span", { class: "name" }, c.name),
+        h("span", { class: "tick" }, "✓"));
+      chip.addEventListener("click", () => {
+        SFX.tap();
+        const idx = s.categories.indexOf(c.id);
+        if (idx >= 0) {
+          if (s.categories.length === 1) { toast("Pick at least one pack"); return; }
+          s.categories.splice(idx, 1); chip.classList.remove("on");
+        } else { s.categories.push(c.id); chip.classList.add("on"); }
+      });
+      chips.append(chip);
+    });
+    const catPanel = h("div", { class: "panel" },
+      h("h3", null, "🃏 Word packs"),
+      h("div", { class: "badge-row", style: "margin-bottom:12px" },
+        h("button", { class: "btn ghost small", onClick: () => { s.categories = GAME_DATA.categories.map((c) => c.id); SFX.tap(); reSelectChips(); } }, "Select all"),
+      ),
+      chips);
+    function reSelectChips() {
+      chips.querySelectorAll(".chip").forEach((ch) => ch.classList.toggle("on", s.categories.includes(ch.dataset.id)));
+    }
+
+    // --- Imposter difficulty ---
+    const modes = [["blind", "Blind", "knows nothing"], ["category", "Category", "knows the topic"], ["hint", "Hint", "gets a clue"]];
+    const seg = h("div", { class: "segmented" });
+    modes.forEach(([val, label]) => {
+      const b = h("button", { class: s.imposterMode === val ? "on" : "" }, label);
+      b.addEventListener("click", () => { s.imposterMode = val; SFX.tap(); seg.querySelectorAll("button").forEach((x, i) => x.classList.toggle("on", modes[i][0] === val)); modeHint.textContent = modes.find((m) => m[0] === val)[2]; });
+      seg.append(b);
+    });
+    const modeHint = h("div", { class: "hint", style: "margin-top:8px" }, modes.find((m) => m[0] === s.imposterMode)[2]);
+    const modePanel = h("div", { class: "panel" },
+      h("h3", null, "🎭 What the imposter sees"), seg, modeHint);
+
+    // --- Timer ---
+    const timerVal = h("span", { class: "value" }, s.timerMinutes === 0 ? "Off" : s.timerMinutes + "m");
+    const tMinus = h("button", { onClick: () => { s.timerMinutes = clamp(s.timerMinutes - 1, 0, 9); SFX.tap(); timerVal.textContent = s.timerMinutes === 0 ? "Off" : s.timerMinutes + "m"; } }, "–");
+    const tPlus = h("button", { onClick: () => { s.timerMinutes = clamp(s.timerMinutes + 1, 0, 9); SFX.tap(); timerVal.textContent = s.timerMinutes + "m"; } }, "+");
+    const timerPanel = h("div", { class: "panel" },
+      h("div", { class: "field", style: "padding:0" },
+        h("div", null, h("div", { class: "label" }, "⏱️ Discussion timer"), h("div", { class: "hint" }, "0 turns it off")),
+        h("div", { class: "stepper" }, tMinus, timerVal, tPlus)));
+
+    const startBtn = h("button", { class: "btn", style: "margin-top:4px", onClick: startGame }, "🎲  Start Game");
+
+    screen.append(
+      h("p", { class: "eyebrow" }, "Game setup"),
+      h("h2", { class: "title", style: "font-size:30px" }, "Configure your round"),
+      playersPanel, namesPanel, catPanel, modePanel, timerPanel, startBtn,
+    );
+
+    renderNameInputs();
+    refreshNumbers();
+    return screen;
+  }
+
+  /* =======================================================================
+     GAME — assignment & round lifecycle
+     ===================================================================== */
+  function startGame() {
+    LS.set("imposter.settings", state.settings);
+    state.scores = {};
+    state.round = 0;
+    state.inGame = true;
+    SFX.reveal();
+    nextRound();
+  }
+
+  function nextRound() {
+    const s = state.settings;
+    state.round += 1;
+
+    // Build player list with names.
+    const names = [];
+    for (let i = 0; i < s.numPlayers; i++) {
+      const nm = (s.names[i] || "").trim() || "Player " + (i + 1);
+      names.push(nm);
+    }
+    // Ensure unique score keys even if names duplicate.
+    const seen = {};
+    const uniqueNames = names.map((nm) => {
+      if (seen[nm]) { seen[nm]++; return nm + " (" + seen[nm] + ")"; }
+      seen[nm] = 1; return nm;
+    });
+    if (state.round === 1) uniqueNames.forEach((nm) => { state.scores[nm] = 0; });
+
+    // Pick the secret word from a random selected category.
+    const cats = GAME_DATA.categories.filter((c) => s.categories.includes(c.id));
+    const cat = pick(cats);
+    const w = pick(cat.words);
+    state.secret = { word: w.word, hint: w.hint || cat.name, category: cat.name, icon: cat.icon };
+
+    // Assign roles.
+    const impCount = clamp(s.numImposters, 1, maxImposters(s.numPlayers));
+    const order = shuffle([...Array(s.numPlayers).keys()]);
+    const impSet = new Set(order.slice(0, impCount));
+    state.players = uniqueNames.map((nm, i) => ({ name: nm, role: impSet.has(i) ? "imposter" : "crew" }));
+
+    // Turn order for discussion: random, imposter never forced first (just random).
+    state.turnOrder = shuffle([...Array(s.numPlayers).keys()]);
+
+    // Reset votes.
+    state.votes = {};
+    state.players.forEach((_, i) => (state.votes[i] = 0));
+
+    go("reveal", { idx: 0 });
+  }
+
+  /* =======================================================================
+     SCREEN: REVEAL (pass-and-play)
+     ===================================================================== */
+  function renderReveal(opts) {
+    setBack(true);
+    const idx = opts.idx || 0;
+    const p = state.players[idx];
+    const total = state.players.length;
+
+    const card = h("div", { class: "flip-card" });
+    const isImp = p.role === "imposter";
+
+    // Back face content depends on role and imposter mode.
+    let backFace;
+    if (isImp) {
+      const extras = [];
+      if (state.settings.imposterMode === "category") extras.push(h("div", { class: "imposter-hint" }, "Topic: " + state.secret.category));
+      if (state.settings.imposterMode === "hint") extras.push(h("div", { class: "imposter-hint" }, "Clue: " + state.secret.hint));
+      backFace = h("div", { class: "flip-face flip-back imposter" },
+        h("div", { class: "imposter-mark" }, "🤫"),
+        h("div", { class: "role-label" }, "You are the Imposter"),
+        h("div", { class: "secret-word" }, "?????"),
+        ...extras,
+        h("div", { class: "tap-to-hide" }, "Blend in. Don't get caught."));
+    } else {
+      backFace = h("div", { class: "flip-face flip-back crew" },
+        h("div", { class: "role-label" }, "Crew · the secret word is"),
+        h("div", { class: "secret-word" }, state.secret.word),
+        h("div", { class: "secret-cat" }, state.secret.icon + " " + state.secret.category),
+        h("div", { class: "tap-to-hide" }, "Memorise it, then pass on."));
+    }
+
+    const front = h("div", { class: "flip-face flip-front" },
+      h("div", { class: "lock" }, "🔒"),
+      h("div", { class: "who" }, "Pass the device to"),
+      h("div", { class: "name" }, p.name),
+      h("div", { class: "tap-hint" }, "Tap to reveal your card"));
+
+    card.append(h("div", { class: "flip-inner" }, front, backFace));
+
+    let revealed = false;
+    const nextBtn = h("button", { class: "btn", style: "margin-top:16px", disabled: true },
+      idx === total - 1 ? "Start Discussion →" : "Hide & Pass →");
+
+    card.addEventListener("click", () => {
+      if (revealed) return;
+      revealed = true;
+      card.classList.add("flipped");
+      SFX.reveal();
+      nextBtn.disabled = false;
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (!revealed) return;
+      SFX.hide();
+      if (idx === total - 1) go("discuss");
+      else go("reveal", { idx: idx + 1 });
+    });
+
+    return h("div", { class: "screen reveal-wrap" },
+      h("div", { class: "reveal-progress" }, `Card ${idx + 1} of ${total} · Round ${state.round}`),
+      card,
+      nextBtn);
+  }
+
+  /* =======================================================================
+     SCREEN: DISCUSS (timer + turn order)
+     ===================================================================== */
+  function renderDiscuss() {
+    setBack(true);
+    const s = state.settings;
+    const R = 90, C = 2 * Math.PI * R;
+
+    const order = state.turnOrder;
+    const turnPills = h("div", { class: "turn-order" },
+      order.map((pi, i) => h("div", { class: "turn-pill" + (i === 0 ? " first" : "") },
+        h("span", { class: "order-no" }, (i + 1) + "."), state.players[pi].name)));
+
+    const screen = h("div", { class: "screen center" },
+      h("p", { class: "eyebrow" }, "Discussion"),
+      h("h2", { class: "title", style: "font-size:28px" }, "Drop your clues"),
+      h("p", { class: "subtitle" },
+        h("b", null, state.players[order[0]].name), " starts. One word each, in order. Then vote."));
+
+    if (s.timerMinutes > 0) {
+      let remaining = s.timerMinutes * 60;
+      const ring = h("div", { class: "timer-ring" });
+      const fmt = (t) => `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`;
+      const label = h("div", { class: "timer-label" }, fmt(remaining));
+      ring.innerHTML = `
+        <svg width="220" height="220" viewBox="0 0 220 220">
+          <defs><linearGradient id="tg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#7c5cff"/><stop offset="100%" stop-color="#ff5c8a"/>
+          </linearGradient></defs>
+          <circle class="track-c" cx="110" cy="110" r="90" fill="none" stroke-width="14"/>
+          <circle class="prog-c" cx="110" cy="110" r="90" fill="none" stroke-width="14"
+            stroke-dasharray="${C}" stroke-dashoffset="0"/>
+        </svg>`;
+      const prog = ring.querySelector(".prog-c");
+      const ringWrap = h("div", { style: "position:relative;display:grid;place-items:center" }, ring,
+        h("div", { style: "position:absolute;text-align:center" }, label, h("div", { class: "timer-sub" }, "remaining")));
+
+      const total = remaining;
+      let paused = false;
+
+      const pauseBtn = h("button", { class: "btn secondary" }, "⏸ Pause");
+      const voteBtn = h("button", { class: "btn good" }, "🗳️ Go to Vote");
+      pauseBtn.addEventListener("click", () => {
+        paused = !paused; SFX.tap();
+        pauseBtn.textContent = paused ? "▶ Resume" : "⏸ Pause";
+      });
+      voteBtn.addEventListener("click", () => go("vote"));
+
+      const tick = setInterval(() => {
+        if (paused) return;
+        remaining = Math.max(0, remaining - 1);
+        label.textContent = fmt(remaining);
+        prog.setAttribute("stroke-dashoffset", String(C * (1 - remaining / total)));
+        if (remaining <= 10 && remaining > 0) { SFX.tick(); ring.classList.add("low"); }
+        if (remaining === 0) {
+          clearInterval(tick); SFX.warn(); toast("Time! Head to the vote.");
+          pauseBtn.disabled = true;
+        }
+      }, 1000);
+      cleanup = () => clearInterval(tick);
+
+      screen.append(ringWrap, turnPills,
+        h("div", { class: "btn-row", style: "margin-top:8px" }, pauseBtn, voteBtn));
+    } else {
+      screen.append(turnPills,
+        h("button", { class: "btn good", onClick: () => go("vote") }, "🗳️ Start Voting"));
+    }
+    return screen;
+  }
+
+  /* =======================================================================
+     SCREEN: VOTE
+     ===================================================================== */
+  function renderVote() {
+    setBack(true);
+    state.players.forEach((_, i) => { if (state.votes[i] == null) state.votes[i] = 0; });
+
+    const totalLabel = h("div", { class: "vote-total" });
+    const revealBtn = h("button", { class: "btn", disabled: true }, "Reveal Results 🔍");
+
+    function refresh() {
+      const total = Object.values(state.votes).reduce((a, b) => a + b, 0);
+      totalLabel.textContent = `${total} vote${total === 1 ? "" : "s"} cast`;
+      revealBtn.disabled = total === 0;
+    }
+
+    const grid = h("div", { class: "vote-grid" });
+    state.players.forEach((p, i) => {
+      const n = h("span", { class: "n" }, state.votes[i]);
+      const minus = h("button", { onClick: () => { state.votes[i] = Math.max(0, state.votes[i] - 1); n.textContent = state.votes[i]; SFX.tap(); refresh(); } }, "–");
+      const plus = h("button", { onClick: () => { state.votes[i]++; n.textContent = state.votes[i]; SFX.vote(); refresh(); } }, "+");
+      grid.append(h("div", { class: "vote-row" },
+        h("span", { class: "pname" }, p.name),
+        h("div", { class: "vote-counter" }, minus, n, plus)));
+    });
+
+    revealBtn.addEventListener("click", () => { SFX.drumroll(); go("results"); });
+
+    refresh();
+    return h("div", { class: "screen" },
+      h("p", { class: "eyebrow" }, "The vote"),
+      h("h2", { class: "title", style: "font-size:28px" }, "Who's the imposter?"),
+      h("p", { class: "subtitle" }, "Tally everyone's votes. Most votes gets ejected — a tie ejects nobody."),
+      grid, totalLabel, revealBtn);
+  }
+
+  /* =======================================================================
+     SCREEN: RESULTS
+     ===================================================================== */
+  function computeEjected() {
+    let max = -1, leaders = [];
+    Object.entries(state.votes).forEach(([i, c]) => {
+      i = Number(i);
+      if (c > max) { max = c; leaders = [i]; }
+      else if (c === max) leaders.push(i);
+    });
+    if (max <= 0) return { ejected: null, tie: false };
+    if (leaders.length > 1) return { ejected: null, tie: true };
+    return { ejected: leaders[0], tie: false };
+  }
+
+  function renderResults() {
+    setBack(false);
+    const { ejected, tie } = computeEjected();
+    const imposters = state.players.map((p, i) => ({ ...p, i })).filter((p) => p.role === "imposter");
+    const caughtImposter = ejected != null && state.players[ejected].role === "imposter";
+
+    const screen = h("div", { class: "screen" });
+
+    // Apply scoring (only once per render of results — guard via flag on state).
+    // We recompute fresh each time results is shown for a round; guard with a key.
+    const stealState = { used: false, won: false };
+
+    function applyBaseScoring() {
+      if (caughtImposter) {
+        // Crew each +1
+        state.players.forEach((p) => { if (p.role === "crew") state.scores[p.name] += 1; });
+      } else {
+        // Imposters survive → each +2
+        imposters.forEach((p) => { state.scores[p.name] += 2; });
+      }
+    }
+
+    // Banner
+    let bannerClass, emoji, title, sub;
+    if (caughtImposter) {
+      bannerClass = "crew"; emoji = "🎉"; title = "Imposter caught!";
+      sub = `${state.players[ejected].name} was an imposter. Crew scores +1 each.`;
+      SFX.crewWin(); confetti();
+    } else {
+      bannerClass = "imposter"; emoji = "🤫"; title = tie ? "Tie — imposter escapes!" : "Wrong call!";
+      sub = tie ? "Nobody was ejected. Imposters score +2 each."
+                : `${state.players[ejected].name} was innocent crew. Imposters score +2 each.`;
+      SFX.imposterWin();
+    }
+    applyBaseScoring();
+
+    screen.append(h("div", { class: "result-banner " + bannerClass },
+      h("div", { class: "result-emoji" }, emoji),
+      h("div", { class: "result-title" }, title),
+      h("p", { class: "muted", style: "margin:4px 0 0" }, sub)));
+
+    // The reveal panel
+    const panel = h("div", { class: "panel" });
+    panel.append(h("div", { class: "reveal-line" },
+      h("span", { class: "k" }, "Secret word"),
+      h("span", { class: "v" }, state.secret.icon + " " + state.secret.word)));
+    panel.append(h("div", { class: "reveal-line" },
+      h("span", { class: "k" }, "Category"),
+      h("span", { class: "v" }, state.secret.category)));
+    panel.append(h("div", { class: "reveal-line" },
+      h("span", { class: "k" }, imposters.length > 1 ? "Imposters" : "Imposter"),
+      h("span", { class: "v" }, imposters.map((p) => p.name).join(", "))));
+    if (ejected != null)
+      panel.append(h("div", { class: "reveal-line" },
+        h("span", { class: "k" }, "Ejected"),
+        h("span", { class: "v" }, state.players[ejected].name + " ",
+          h("span", { class: "tag " + (caughtImposter ? "imp" : "crew") }, caughtImposter ? "Imposter" : "Crew"))));
+    screen.append(panel);
+
+    // Imposter's last-chance guess (only if caught).
+    const actions = h("div", { class: "stack" });
+    if (caughtImposter) {
+      const guessPanel = h("div", { class: "panel" });
+      const input = h("input", { type: "text", placeholder: "Imposter, type your guess…",
+        style: "width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:12px 14px;border-radius:12px;font-size:16px;font-family:inherit" });
+      const guessBtn = h("button", { class: "btn small good" }, "Lock in guess");
+      const skipBtn = h("button", { class: "btn small ghost" }, "Skip");
+      const resultMsg = h("div", { class: "muted", style: "margin-top:10px;text-align:center" });
+
+      function resolveGuess(text) {
+        if (stealState.used) return;
+        stealState.used = true;
+        const correct = norm(text) === norm(state.secret.word);
+        const imp = state.players[ejected];
+        if (correct) {
+          state.scores[imp.name] += 2;
+          stealState.won = true;
+          resultMsg.innerHTML = `🔥 <b>${imp.name}</b> nailed it — <b>“${state.secret.word}”</b>! Steal bonus +2.`;
+          SFX.crewWin(); confetti(60);
+        } else {
+          resultMsg.innerHTML = text ? `❌ “${text}” was wrong. No steal.` : "Guess skipped.";
+          SFX.warn();
+        }
+        input.disabled = true; guessBtn.disabled = true; skipBtn.disabled = true;
+        renderScoreSummary();
+      }
+      guessBtn.addEventListener("click", () => resolveGuess(input.value));
+      skipBtn.addEventListener("click", () => resolveGuess(""));
+
+      guessPanel.append(
+        h("h3", null, "🎯 Imposter's last chance"),
+        h("p", { class: "muted", style: "margin:0 0 12px;font-size:14px" }, "Guess the secret word for a +2 steal."),
+        input,
+        h("div", { class: "btn-row", style: "margin-top:12px" }, skipBtn, guessBtn),
+        resultMsg);
+      screen.append(guessPanel);
+    }
+
+    // Live mini score summary + navigation.
+    const summary = h("div", { class: "panel" });
+    function renderScoreSummary() {
+      summary.innerHTML = "";
+      summary.append(h("h3", null, "📊 Standings"));
+      const ranked = Object.entries(state.scores).sort((a, b) => b[1] - a[1]);
+      ranked.forEach(([nm, pts], idx) => {
+        summary.append(h("div", { class: "reveal-line" },
+          h("span", { class: "k" }, (idx === 0 ? "🥇 " : "") + nm),
+          h("span", { class: "v" }, pts + " pts")));
+      });
+    }
+    renderScoreSummary();
+    screen.append(summary);
+
+    actions.append(
+      h("button", { class: "btn", onClick: () => nextRound() }, "🔁  Next Round"),
+      h("button", { class: "btn secondary", onClick: () => go("scoreboard") }, "🏁  End Game & Scores"));
+    screen.append(actions);
+
+    return screen;
+  }
+
+  /* =======================================================================
+     SCREEN: SCOREBOARD
+     ===================================================================== */
+  function renderScoreboard() {
+    setBack(false);
+    state.inGame = false;
+    const ranked = Object.entries(state.scores).sort((a, b) => b[1] - a[1]);
+    const medals = ["🥇", "🥈", "🥉"];
+    const topScore = ranked.length ? ranked[0][1] : 0;
+
+    if (ranked.length && topScore > 0) confetti(70);
+
+    const table = h("div", { class: "score-table" });
+    ranked.forEach(([nm, pts], i) => {
+      const lead = pts === topScore && topScore > 0;
+      table.append(h("div", { class: "score-row" + (lead ? " lead" : "") },
+        h("span", { class: "score-rank" }, medals[i] || i + 1),
+        h("span", { class: "score-name" }, nm),
+        h("span", { class: "score-pts" }, pts)));
+    });
+
+    return h("div", { class: "screen" },
+      h("p", { class: "eyebrow center" }, `${state.round} round${state.round === 1 ? "" : "s"} played`),
+      h("h2", { class: "title center", style: "font-size:34px" },
+        topScore > 0 ? "🏆 " + ranked[0][0] + " wins!" : "Game over"),
+      h("div", { class: "card", style: "margin:10px 0 18px" }, table),
+      h("div", { class: "stack" },
+        h("button", { class: "btn", onClick: () => { state.inGame = true; nextRound(); } }, "🔁  Play Another Round"),
+        h("button", { class: "btn secondary", onClick: () => go("setup") }, "⚙️  New Game (reconfigure)"),
+        h("button", { class: "btn ghost", onClick: () => go("home") }, "🏠  Home")));
+  }
+
+  /* =======================================================================
+     RENDER DISPATCH
+     ===================================================================== */
+  function render(screen, opts = {}) {
+    let node;
+    switch (screen) {
+      case "home": node = renderHome(); break;
+      case "howto": node = renderHowto(); break;
+      case "setup": node = renderSetup(); break;
+      case "reveal": node = renderReveal(opts); break;
+      case "discuss": node = renderDiscuss(); break;
+      case "vote": node = renderVote(); break;
+      case "results": node = renderResults(); break;
+      case "scoreboard": node = renderScoreboard(); break;
+      default: node = renderHome();
+    }
+    app.innerHTML = "";
+    app.append(node);
+    app.scrollTop = 0;
+    window.scrollTo(0, 0);
+  }
+
+  // Boot.
+  render("home");
+
+  // Optional: register service worker for offline/PWA when served over http(s).
+  if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  }
+})();
+
+  </script>
+</body>
+</html>

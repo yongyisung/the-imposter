@@ -6,6 +6,7 @@
   "scripts": {
     "start": "npx --yes serve -l 5173 .",
     "dev": "python3 -m http.server 5173",
+    "build": "node build-standalone.mjs",
     "test": "node smoke-test.mjs"
   },
   "keywords": ["game", "party-game", "imposter", "spyfall", "pwa"],
